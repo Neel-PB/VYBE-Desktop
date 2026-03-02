@@ -121,6 +121,208 @@
 	margin-inline-start: 24px;
 }
 
+/* Vybe empty state (no folder open) */
+
+/* Cursor uses content width 420px + 48px padding each side = 516px total */
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark.vybe-empty-state-visible {
+	max-width: 516px;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	width: 100%;
+	min-width: 516px;
+	max-width: 516px;
+	margin: auto;
+	padding: 48px;
+	gap: 24px;
+	box-sizing: border-box;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-inner {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 100%;
+	gap: 24px;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-buttons {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+	width: 100%;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-button {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 6px;
+	padding: 10px 12px;
+	border-radius: 6px;
+	border: 1px solid var(--vscode-widget-border);
+	background-color: var(--vscode-input-background, var(--vscode-quickInput-background, var(--vscode-editorWidget-background)));
+	box-shadow: 0 0 1px var(--vscode-widget-shadow);
+	cursor: pointer;
+	user-select: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-button .codicon {
+	font-size: 16px;
+	color: var(--vscode-foreground);
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-button .vybe-empty-state-button-label {
+	font-size: 12px;
+	color: var(--vscode-foreground);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Vybe workspace state (project open): vertical list matching Cursor outerHTML – same keybinding design, hover on each row */
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-workspace-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	width: 100%;
+	max-width: 272px;
+	margin: auto;
+	box-sizing: border-box;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-workspace-state .vybe-workspace-buttons.watermark-box {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-workspace-state .vybe-workspace-button {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 0;
+	cursor: pointer;
+	color: var(--vscode-descriptionForeground);
+	border-radius: 4px;
+	padding: 4px 4px;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-workspace-state .vybe-workspace-button:hover {
+	background-color: var(--vscode-list-hoverBackground);
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-workspace-state .vybe-workspace-button dt {
+	letter-spacing: 0.04em;
+	margin: 0;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-workspace-state .vybe-workspace-button dd {
+	text-align: left;
+	margin-inline-start: 24px;
+	margin: 0;
+}
+
+/* Same keybinding key design as default watermark (KeybindingLabel uses theme vars; ensure keys are visible) */
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-workspace-state .monaco-keybinding {
+	color: var(--vscode-keybindingLabel-foreground);
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-workspace-state .monaco-keybinding .monaco-keybinding-key {
+	background-color: var(--vscode-keybindingLabel-background);
+	border: 1px solid var(--vscode-keybindingLabel-border);
+	border-bottom-color: var(--vscode-keybindingLabel-bottomBorder);
+	box-shadow: inset 0 -1px 0 var(--vscode-widget-shadow);
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-recent {
+	width: 100%;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-recent-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.2rem 0.4rem;
+	font-size: 0.65rem;
+	line-height: 1.2;
+	margin-bottom: 0.15rem;
+	opacity: 0.9;
+	gap: 0.5rem;
+	color: var(--vscode-foreground);
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-recent-title {
+	font-weight: 400;
+	margin-right: 0.25rem;
+	opacity: 0.6;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-view-all {
+	cursor: pointer;
+	opacity: 0.6;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-view-all:hover {
+	text-decoration: underline;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-recent-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-recent-item {
+	display: flex;
+	align-items: center;
+	padding: 0.2rem 0.4rem;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	min-width: 0;
+	line-height: 1.2;
+	outline: none;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-recent-item:hover {
+	background-color: var(--vscode-list-hoverBackground);
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-recent-item .vybe-empty-state-recent-name {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-size: 0.75rem;
+	color: var(--vscode-foreground);
+	opacity: 0.8;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .editor-group-watermark > .vybe-empty-state .vybe-empty-state-recent-item .vybe-empty-state-recent-path {
+	font-size: 0.65rem;
+	color: var(--vscode-foreground);
+	opacity: 0.6;
+	margin-left: 12px;
+	flex-shrink: 0;
+	direction: rtl;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 50%;
+}
+
 /* Title */
 
 .monaco-workbench .part.editor > .content .editor-group-container > .title {
