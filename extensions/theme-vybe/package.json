@@ -1,0 +1,28 @@
+{
+	"name": "theme-vybe",
+	"displayName": "Vybe Themes",
+	"description": "Vybe Dark and Vybe Light themes (code and terminal colors)",
+	"version": "0.0.1",
+	"publisher": "vscode",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.85.0"
+	},
+	"categories": ["Themes"],
+	"contributes": {
+		"themes": [
+			{
+				"id": "vybe-dark",
+				"label": "Vybe Dark",
+				"uiTheme": "vs-dark",
+				"path": "./themes/vybe-dark-color-theme.json"
+			},
+			{
+				"id": "vybe-light",
+				"label": "Vybe Light",
+				"uiTheme": "vs",
+				"path": "./themes/vybe-light-color-theme.json"
+			}
+		]
+	}
+}
