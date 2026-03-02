@@ -656,7 +656,7 @@ const registry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Con
 			},
 			[LayoutSettings.ACTIVITY_BAR_COMPACT]: {
 				'type': 'boolean',
-				'default': false,
+				'default': true, // VYBE: compact activity bar is default; size switch removed from UI
 				'markdownDescription': localize({ comment: ['This is the description for a setting'], key: 'activityBarCompact' }, "Controls whether the Activity Bar uses a compact layout with smaller icons and reduced width. This setting only applies when {0} is set to {1}.", '`#workbench.activityBar.location#`', '`default`'),
 			},
 			'workbench.activityBar.iconClickBehavior': {

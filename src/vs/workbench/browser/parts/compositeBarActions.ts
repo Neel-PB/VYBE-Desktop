@@ -5,7 +5,7 @@
 
 import { localize } from '../../../nls.js';
 import { Action, IAction, Separator } from '../../../base/common/actions.js';
-import { $, addDisposableListener, append, clearNode, EventHelper, EventType, getDomNodePagePosition, hide, show } from '../../../base/browser/dom.js';
+import { $, addDisposableListener, append, clearNode, EventHelper, EventType, getDomNodePagePosition, getWindow, hide, scheduleAtNextAnimationFrame, show } from '../../../base/browser/dom.js';
 import { ICommandService } from '../../../platform/commands/common/commands.js';
 import { toDisposable, DisposableStore, MutableDisposable } from '../../../base/common/lifecycle.js';
 import { IContextMenuService } from '../../../platform/contextview/browser/contextView.js';
@@ -150,6 +150,8 @@ export interface ICompositeBarActionViewItemOptions extends IActionViewItemOptio
 	readonly hoverOptions: IActivityHoverOptions;
 	readonly hasPopup?: boolean;
 	readonly compact?: boolean;
+	/** VYBE: use VYBE tab DOM (label wrapper, truncation) and let CSS handle colors */
+	readonly useVybeTabStyle?: boolean;
 }
 
 export class CompositeBarActionViewItem extends BaseActionViewItem {
@@ -192,24 +194,27 @@ export class CompositeBarActionViewItem extends BaseActionViewItem {
 		const colors = this.options.colors(theme);
 
 		if (this.label) {
-			if (this.options.icon) {
-				const foreground = this._action.checked ? colors.activeForegroundColor : colors.inactiveForegroundColor;
-				if (this.compositeBarActionItem.iconUrl) {
-					// Apply background color to activity bar item provided with iconUrls
-					this.label.style.backgroundColor = foreground ? foreground.toString() : '';
-					this.label.style.color = '';
+			// VYBE: For composite-bar-action-tab (VYBE tab style), let CSS handle colors
+			const isVybeTabStyle = this.options.useVybeTabStyle && this.container.classList.contains('composite-bar-action-tab');
+			if (!isVybeTabStyle) {
+				if (this.options.icon) {
+					const foreground = this._action.checked ? colors.activeForegroundColor : colors.inactiveForegroundColor;
+					if (this.compositeBarActionItem.iconUrl) {
+						this.label.style.backgroundColor = foreground ? foreground.toString() : '';
+						this.label.style.color = '';
+					} else {
+						this.label.style.color = foreground ? foreground.toString() : '';
+						this.label.style.backgroundColor = '';
+					}
 				} else {
-					// Apply foreground color to activity bar items provided with codicons
+					const foreground = this._action.checked ? colors.activeForegroundColor : colors.inactiveForegroundColor;
+					const borderBottomColor = this._action.checked ? colors.activeBorderBottomColor : null;
 					this.label.style.color = foreground ? foreground.toString() : '';
-					this.label.style.backgroundColor = '';
+					this.label.style.borderBottomColor = borderBottomColor ? borderBottomColor.toString() : '';
 				}
-			} else {
-				const foreground = this._action.checked ? colors.activeForegroundColor : colors.inactiveForegroundColor;
-				const borderBottomColor = this._action.checked ? colors.activeBorderBottomColor : null;
-				this.label.style.color = foreground ? foreground.toString() : '';
-				this.label.style.borderBottomColor = borderBottomColor ? borderBottomColor.toString() : '';
+			} else if (this._action.checked) {
+				this.label.style.borderBottomColor = 'transparent';
 			}
-
 			this.container.style.setProperty('--insert-border-color', colors.dragAndDropBorder ? colors.dragAndDropBorder.toString() : '');
 		}
 
@@ -233,6 +238,10 @@ export class CompositeBarActionViewItem extends BaseActionViewItem {
 		super.render(container);
 
 		this.container = container;
+		// VYBE: VYBE tab DOM for panel and auxiliary bar
+		if (this.options.useVybeTabStyle) {
+			this.container.classList.add('composite-bar-action-tab');
+		}
 		if (this.options.icon) {
 			this.container.classList.add('icon');
 		}
@@ -270,8 +279,23 @@ export class CompositeBarActionViewItem extends BaseActionViewItem {
 			},
 		}), { groupId: 'composite-bar-actions' }));
 
-		// Label
-		this.label = append(container, $('a'));
+		if (this.options.useVybeTabStyle) {
+			append(container, $('.status-indicator'));
+			const labelWrapper = append(container, $('.composite-bar-action-tab-label'));
+			labelWrapper.style.display = 'flex';
+			labelWrapper.style.alignItems = 'center';
+			labelWrapper.style.flex = '1 1 auto';
+			labelWrapper.style.minWidth = '0px';
+			labelWrapper.style.gap = '4px';
+			this.label = append(labelWrapper, $('a'));
+			this.label.style.flex = '1 1 auto';
+			this.label.style.minWidth = '0px';
+			const resizeObserver = new ResizeObserver(() => this._updateTruncationClass());
+			resizeObserver.observe(this.label);
+			this._register({ dispose: () => resizeObserver.disconnect() });
+		} else {
+			this.label = append(container, $('a'));
+		}
 
 		// Badge
 		this.badge = append(container, $('.badge'));
@@ -400,6 +424,18 @@ export class CompositeBarActionViewItem extends BaseActionViewItem {
 		if (!this.options.icon) {
 			this.label.textContent = this.action.label;
 		}
+		if (this.options.useVybeTabStyle) {
+			scheduleAtNextAnimationFrame(getWindow(this.label), () => this._updateTruncationClass());
+		}
+	}
+
+	private _updateTruncationClass(): void {
+		if (!this.label || !this.label.isConnected) {
+			return;
+		}
+		const truncated = this.label.scrollWidth > this.label.clientWidth;
+		this.label.classList.toggle('truncated', truncated);
+		this.container.classList.toggle('is-truncated', truncated);
 	}
 
 	private updateTitle(): void {

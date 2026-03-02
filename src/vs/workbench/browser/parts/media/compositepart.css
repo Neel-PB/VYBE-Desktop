@@ -16,3 +16,8 @@
 	flex: 1;
 	padding-left: 8px;
 }
+
+/* VYBE: primary bar (sidebar) only – no left padding on title label */
+.monaco-workbench .part.sidebar > .title > .title-label {
+	padding-left: 0;
+}

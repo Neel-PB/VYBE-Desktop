@@ -202,6 +202,7 @@ export class AuxiliaryBarPart extends AbstractPaneCompositePart {
 		const $this = this;
 		return {
 			partContainerClass: 'auxiliarybar',
+			useVybeTabStyle: true, /* VYBE: VYBE tab style for secondary sidebar */
 			pinnedViewContainersKey: AuxiliaryBarPart.pinnedViewsKey,
 			placeholderViewContainersKey: AuxiliaryBarPart.placeholdeViewContainersKey,
 			viewContainersWorkspaceStateKey: AuxiliaryBarPart.viewContainersWorkspaceStateKey,

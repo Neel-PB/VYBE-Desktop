@@ -74,6 +74,8 @@ export interface IPaneCompositeBarOptions {
 	readonly viewContainersWorkspaceStateKey: string;
 	readonly icon: boolean;
 	readonly compact?: boolean;
+	/** VYBE: when true, use VYBE tab DOM and CSS for panel/auxiliary bar */
+	readonly useVybeTabStyle?: boolean;
 	readonly iconSize: number;
 	readonly recomputeSizes: boolean;
 	readonly orientation: ActionsOrientation;
@@ -137,6 +139,7 @@ export class PaneCompositeBar extends Disposable {
 			orientation: this.options.orientation,
 			activityHoverOptions: this.options.activityHoverOptions,
 			preventLoopNavigation: this.options.preventLoopNavigation,
+			useVybeTabStyle: this.options.useVybeTabStyle,
 			openComposite: async (compositeId, preserveFocus) => {
 				return (await this.paneCompositePart.openPaneComposite(compositeId, !preserveFocus)) ?? null;
 			},

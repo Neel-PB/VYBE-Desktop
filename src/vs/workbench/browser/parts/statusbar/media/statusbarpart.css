@@ -215,6 +215,20 @@
 	background-color: var(--vscode-statusBarItem-prominentHoverBackground) !important;
 }
 
+.monaco-workbench .part.statusbar > .items-container > .statusbar-item.remote-kind,
+.monaco-workbench .part.statusbar > .items-container > .statusbar-item#status\.host {
+	/* VYBE: remote server button width 36px (was 32px) */
+	min-width: 36px;
+}
+
+.monaco-workbench .part.statusbar > .items-container > .statusbar-item.remote-kind > .statusbar-item-label,
+.monaco-workbench .part.statusbar > .items-container > .statusbar-item#status\.host > .statusbar-item-label {
+	/* VYBE: center icon/text horizontally in the 36px button */
+	justify-content: center;
+	width: 100%;
+	box-sizing: border-box;
+}
+
 .monaco-workbench .part.statusbar > .items-container > .statusbar-item.remote-kind {
 	color: var(--vscode-statusBarItem-remoteForeground);
 	background-color: var(--vscode-statusBarItem-remoteBackground);

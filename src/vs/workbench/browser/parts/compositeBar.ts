@@ -143,6 +143,8 @@ export interface ICompositeBarOptions {
 	readonly orientation: ActionsOrientation;
 	readonly colors: (theme: IColorTheme) => ICompositeBarColors;
 	readonly compact?: boolean;
+	/** VYBE: VYBE tab DOM/CSS for panel and auxiliary bar */
+	readonly useVybeTabStyle?: boolean;
 	readonly compositeSize: number;
 	readonly overflowActionSize: number;
 	readonly dndHandler: ICompositeDragAndDrop;
@@ -293,7 +295,7 @@ export class CompositeBar extends Widget implements ICompositeBar {
 				const item = this.model.findItem(action.id);
 				return item && this.instantiationService.createInstance(
 					CompositeActionViewItem,
-					{ ...options, draggable: true, colors: this.options.colors, icon: this.options.icon, hoverOptions: this.options.activityHoverOptions, compact: this.options.compact },
+					{ ...options, draggable: true, colors: this.options.colors, icon: this.options.icon, hoverOptions: this.options.activityHoverOptions, compact: this.options.compact, useVybeTabStyle: this.options.useVybeTabStyle },
 					action as CompositeBarAction,
 					item.pinnedAction,
 					item.toggleBadgeAction,

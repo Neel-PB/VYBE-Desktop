@@ -136,6 +136,7 @@ export class PanelPart extends AbstractPaneCompositePart {
 	protected getCompositeBarOptions(): IPaneCompositeBarOptions {
 		return {
 			partContainerClass: 'panel',
+			useVybeTabStyle: true, /* VYBE: VYBE tab style for panel */
 			pinnedViewContainersKey: 'workbench.panel.pinnedPanels',
 			placeholderViewContainersKey: 'workbench.panel.placeholderPanels',
 			viewContainersWorkspaceStateKey: 'workbench.panel.viewContainersWorkspaceState',
