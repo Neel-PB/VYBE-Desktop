@@ -441,4 +441,7 @@ import './contrib/editTelemetry/browser/editTelemetry.contribution.js';
 // Opener
 import './contrib/opener/browser/opener.contribution.js';
 
+// VYBE Settings
+import './contrib/vybeSettings/browser/vybeSettings.contribution.js';
+
 //#endregion
