@@ -81,6 +81,23 @@
 				},
 				"publisherDisplayName": "Microsoft"
 			}
+		},
+		{
+			"name": "ms-vscode-remote.remote-ssh",
+			"version": "0.113.1",
+			"vsix": "build/remote-ssh/ms-vscode-remote.remote-ssh-0.113.1.vsix",
+			"sha256": "fedcb28dfddfaae5268dd117ec6caddcc0a1ce7d6a31b8a3c9e8fc2ec92de92a",
+			"repo": "https://github.com/microsoft/vscode-remote-release",
+			"metadata": {
+				"id": "b6c7f8e9-0a1b-2c3d-4e5f-6a7b8c9d0e1f",
+				"publisherId": {
+					"publisherId": "5f5636e7-69ed-4afe-b5d6-8d231fb3d3ee",
+					"publisherName": "ms-vscode-remote",
+					"displayName": "Microsoft",
+					"flags": "verified"
+				},
+				"publisherDisplayName": "Microsoft"
+			}
 		}
 	],
 	"defaultChatAgent": {
