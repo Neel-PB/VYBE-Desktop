@@ -3,11 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { $, append, addDisposableListener, getWindow } from '../../../../base/browser/dom.js';
-import { Disposable } from '../../../../base/common/lifecycle.js';
+import { $, append, addDisposableListener, EventType, getWindow } from '../../../../base/browser/dom.js';
+import { StandardKeyboardEvent } from '../../../../base/browser/keyboardEvent.js';
+import { KeyCode } from '../../../../base/common/keyCodes.js';
+import { Disposable, DisposableStore, IDisposable } from '../../../../base/common/lifecycle.js';
 import { IThemeService } from '../../../../platform/theme/common/themeService.js';
-import { isDarkTheme } from './themeUtils.js';
 import { ICommandService } from '../../../../platform/commands/common/commands.js';
+import { showVybeDropdownPanel } from '../../vybeDropdown/browser/vybeDropdownPanel.js';
+import { getDropdownRowBaseStyle, getDropdownDividerStyle, attachDropdownRowHover } from '../../vybeDropdown/browser/vybeDropdownStyles.js';
+import { getVybeDropdownThemeColors, IVybeDropdownThemeColors } from '../../vybeDropdown/browser/vybeDropdownTheme.js';
+import { VybeDropdownTokens } from '../../vybeDropdown/browser/vybeDropdownTokens.js';
 import { IWorkbenchLayoutService, Parts, SINGLE_WINDOW_PARTS } from '../../../services/layout/browser/layoutService.js';
 import { IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
 
@@ -28,9 +33,7 @@ interface ToggleRowConfig {
 }
 
 export class VybeSettingsDropdown extends Disposable {
-	private dropdownElement: HTMLElement | null = null;
-	private menuContainer: HTMLElement | null = null;
-	private backdrop: HTMLElement | null = null;
+	private _panelDisposable: IDisposable | null = null;
 	private agentSidebarSubmenu: HTMLElement | null = null;
 	private agentSidebarSubmenuVisible: boolean = false;
 	private agentSidebarCurrentValue: string = 'Left';
@@ -48,92 +51,27 @@ export class VybeSettingsDropdown extends Disposable {
 		super();
 	}
 
-	public show(): void {
-		// Remove existing dropdown if any (toggle behavior)
-		if (this.dropdownElement) {
+	public show(anchor?: HTMLElement): void {
+		if (this._panelDisposable) {
 			this.hide();
 			return;
 		}
-
-		this.createDropdown();
+		const el = anchor ?? this.anchorElement;
+		const colors = getVybeDropdownThemeColors(this.themeService);
+		this._panelDisposable = showVybeDropdownPanel(el, this.themeService, {
+			buildContent: (container: HTMLElement) => this.buildSettingsContent(container, colors),
+			onClose: () => { this._panelDisposable = null; },
+		});
 	}
 
-	private createDropdown(): void {
-		// Detect theme
-		const isDark = isDarkTheme(this.themeService, this.anchorElement);
-
-		// Theme colors - use same colors as model dropdown and agent dropdown
-		const bgColor = isDark ? '#212427' : '#eceff2';
-		const borderColor = isDark ? '#383838' : '#d9d9d9';
-		const textColor = isDark ? 'rgba(228, 228, 228, 0.92)' : 'rgba(51, 51, 51, 0.9)';
-		const dividerColor = isDark ? '#383838' : '#d9d9d9';
-
-		// Create backdrop
-		const window = getWindow(this.anchorElement);
-		const body = window.document.body;
-		if (!body) {
-			return;
-		}
-		this.backdrop = append(body, $('div'));
-		this.backdrop.className = 'agent-layout-quick-menu__backdrop';
-		this.backdrop.style.cssText = `
-			position: fixed;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background-color: rgba(0, 0, 0, 0);
-			z-index: 2550;
-			pointer-events: all;
-		`;
-
-		// Outer container - context-view wrapper
-		this.dropdownElement = append(body, $('div'));
-		this.dropdownElement.className = 'context-view monaco-component bottom right';
-		this.dropdownElement.style.cssText = `
-			position: absolute;
-			z-index: 2551;
-			width: initial;
-		`;
-
-		// Position dropdown - right edge aligned with button
-		const rect = this.anchorElement.getBoundingClientRect();
-		const dropdownWidth = 244;
-		this.dropdownElement.style.top = `${rect.bottom + 3}px`;
-		this.dropdownElement.style.left = `${rect.right - dropdownWidth}px`;
-
-		// Main menu container
-		this.menuContainer = append(this.dropdownElement, $('div'));
-		this.menuContainer.className = 'agent-layout-quick-menu';
-		this.menuContainer.style.cssText = `
-			box-sizing: border-box;
-			display: flex;
-			flex-direction: column;
-			width: 244px;
-			background-color: ${bgColor};
-			border: 1px solid ${borderColor};
-			border-radius: 6px;
-			padding: 2px;
-			box-shadow: rgba(255, 255, 255, 0.05) 0px 0px 4px 0px inset, color(srgb 0 0 0 / 0.24) 0px 0px 3px 0px, color(srgb 0 0 0 / 0.12) 0px 16px 24px 0px;
-			color: ${textColor};
-			font-family: -apple-system, "system-ui", sans-serif;
-			font-size: 13px;
-			line-height: 18.2px;
-			user-select: none;
-			z-index: 10001;
-			position: relative;
-		`;
+	private buildSettingsContent(container: HTMLElement, colors: IVybeDropdownThemeColors): IDisposable {
+		const focusables: HTMLElement[] = [];
 
 		// Section 1: Toggle Options
-		const section1 = append(this.menuContainer, $('div'));
-		section1.className = 'agent-layout-quick-menu__section';
-		section1.style.cssText = `
-			display: flex;
-			flex-direction: column;
-			width: 238px;
-		`;
+		const section1 = append(container, $('div'));
+		section1.className = 'vybe-dropdown-section';
+		section1.style.cssText = `display: flex; flex-direction: column; width: 100%;`;
 
-		// Toggle rows: Sidebar = primary sidebar, Panel = panel bottom, Agent = secondary sidebar
 		const toggleRows: ToggleRowConfig[] = [
 			{
 				label: 'Sidebar',
@@ -162,489 +100,290 @@ export class VybeSettingsDropdown extends Disposable {
 		];
 
 		toggleRows.forEach((row) => {
-			const isOn = row.state === 'on';
-			this.toggleStates.set(row.label, isOn);
-			const rowElement = this.createToggleRow(row, isDark, textColor);
-			section1.appendChild(rowElement);
+			this.toggleStates.set(row.label, row.state === 'on');
+			const el = this.createToggleRow(row, colors);
+			section1.appendChild(el);
+			focusables.push(el);
 		});
 
-		// Divider
-		const divider1 = this.createDivider(dividerColor);
-		if (this.menuContainer) {
-			this.menuContainer.appendChild(divider1);
-		}
+		container.appendChild(this.createDivider(colors));
 
-		// Section 2: Submenu and Additional Options
-		if (!this.menuContainer) {
-			return;
-		}
-		const section2 = append(this.menuContainer, $('div'));
-		section2.className = 'agent-layout-quick-menu__section';
-		section2.style.cssText = `
-			display: flex;
-			flex-direction: column;
-			width: 238px;
-		`;
+		// Section 2: Submenu and footer
+		const section2 = append(container, $('div'));
+		section2.className = 'vybe-dropdown-section';
+		section2.style.cssText = `display: flex; flex-direction: column; width: 100%;`;
 
-		// Agent Sidebar submenu: "Left" = secondary sidebar on left (workbench.sideBar.location = 'right'), "Right" = on right (location = 'left')
 		const sidebarLocation = this.configurationService.getValue<string>(SIDEBAR_LOCATION_KEY) ?? 'left';
 		this.agentSidebarCurrentValue = sidebarLocation === 'right' ? 'Left' : 'Right';
-		const agentSidebarRow = this.createSubmenuRow('Agent Sidebar', this.agentSidebarCurrentValue, isDark, textColor);
-		section2.appendChild(agentSidebarRow);
+		const agentWrapper = this.createSubmenuRow('Agent Sidebar', this.agentSidebarCurrentValue, colors);
+		section2.appendChild(agentWrapper);
+		focusables.push(agentWrapper.firstElementChild as HTMLElement);
 
-		// Divider
-		const divider2 = this.createDivider(dividerColor);
-		this.menuContainer.appendChild(divider2);
+		container.appendChild(this.createDivider(colors));
+		const footerLink = this.createFooterLink('VYBE Settings', colors);
+		container.appendChild(footerLink);
+		focusables.push(footerLink);
 
-		// Footer Link: VYBE Settings
-		const footerLink = this.createFooterLink('VYBE Settings', isDark, textColor);
-		this.menuContainer.appendChild(footerLink);
-
-		// Close dropdown when clicking outside
-		const closeHandler = (e: MouseEvent) => {
-			if (
-				!this.dropdownElement?.contains(e.target as Node) &&
-				!this.anchorElement.contains(e.target as Node)
-			) {
-				this.hide();
-				getWindow(this.anchorElement).document.removeEventListener('click', closeHandler);
+		// VS Code: no focus on open. First key gives focus to panel and first item.
+		const store = new DisposableStore();
+		let focusedIndex = -1;
+		const getEffectiveFocusables = (): HTMLElement[] => {
+			if (this.agentSidebarSubmenuVisible && this.agentSidebarSubmenu) {
+				const opts = Array.from(this.agentSidebarSubmenu.querySelectorAll<HTMLElement>('.vybe-dropdown-submenu-option'));
+				return [...focusables.slice(0, 4), ...opts, focusables[4]];
 			}
+			return focusables;
 		};
-
-		setTimeout(() => {
-			getWindow(this.anchorElement).document.addEventListener('click', closeHandler);
-		}, 0);
+		const updateHighlight = () => {
+			const list = getEffectiveFocusables();
+			list.forEach((el, i) => {
+				el.style.backgroundColor = i === focusedIndex ? colors.hoverBg : 'transparent';
+			});
+		};
+		container.tabIndex = -1;
+		const win = getWindow(container);
+		store.add(addDisposableListener(win.document, EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			if (container.contains(e.target as Node)) return;
+			const event = new StandardKeyboardEvent(e);
+			if (!event.equals(KeyCode.DownArrow) && !event.equals(KeyCode.UpArrow) && !event.equals(KeyCode.Enter) && !event.equals(KeyCode.Escape)) return;
+			container.tabIndex = 0;
+			container.focus();
+			const list = getEffectiveFocusables();
+			focusedIndex = event.equals(KeyCode.UpArrow) ? list.length - 1 : 0;
+			updateHighlight();
+			if (event.equals(KeyCode.Enter)) {
+				list[focusedIndex].click();
+			} else if (event.equals(KeyCode.Escape)) {
+				this.hide();
+			}
+			event.preventDefault();
+			event.stopPropagation();
+		}, true));
+		store.add(addDisposableListener(container, EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			const event = new StandardKeyboardEvent(e);
+			const list = getEffectiveFocusables();
+			if (event.equals(KeyCode.DownArrow)) {
+				focusedIndex = focusedIndex < 0 ? 0 : (focusedIndex + 1) % list.length;
+				updateHighlight();
+				event.preventDefault();
+				event.stopPropagation();
+			} else if (event.equals(KeyCode.UpArrow)) {
+				focusedIndex = focusedIndex < 0 ? list.length - 1 : (focusedIndex - 1 + list.length) % list.length;
+				updateHighlight();
+				event.preventDefault();
+				event.stopPropagation();
+			} else if (event.equals(KeyCode.Enter)) {
+				if (focusedIndex < 0) return;
+				list[focusedIndex].click();
+				event.preventDefault();
+				event.stopPropagation();
+				setTimeout(() => {
+					container.focus();
+					if (focusedIndex === 3 && this.agentSidebarSubmenuVisible) {
+						focusedIndex = 4;
+						updateHighlight();
+					} else if (focusedIndex >= 4 && !this.agentSidebarSubmenuVisible) {
+						focusedIndex = 3;
+						updateHighlight();
+					}
+				}, 0);
+			} else if (event.equals(KeyCode.Escape)) {
+				if (this.agentSidebarSubmenuVisible) {
+					this.toggleAgentSidebarSubmenu();
+					focusedIndex = 3;
+					updateHighlight();
+					event.preventDefault();
+					event.stopPropagation();
+				} else {
+					this.hide();
+					event.preventDefault();
+					event.stopPropagation();
+				}
+			}
+		}));
+		store.add(addDisposableListener(container, EventType.MOUSE_OVER, (e: MouseEvent) => {
+			const target = e.target as HTMLElement;
+			const list = getEffectiveFocusables();
+			for (let i = 0; i < list.length; i++) {
+				if (list[i] === target || list[i].contains(target)) {
+					focusedIndex = i;
+					updateHighlight();
+					break;
+				}
+			}
+		}));
+		return store;
 	}
 
-	private createToggleRow(config: ToggleRowConfig, isDark: boolean, textColor: string): HTMLElement {
+	private createToggleRow(config: ToggleRowConfig, colors: IVybeDropdownThemeColors): HTMLElement {
+		const T = VybeDropdownTokens;
 		const row = $('div');
-		row.className = 'agent-layout-quick-menu__row agent-layout-quick-menu__row--toggle';
-		row.style.cssText = `
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			height: 24px;
-			padding: 3px 8px;
-			border-radius: 4px;
-			cursor: pointer;
-			box-sizing: border-box;
-			width: 238px;
-			font-size: 12px;
-			line-height: 18px;
-		`;
+		row.className = 'vybe-dropdown-row vybe-dropdown-row--toggle';
+		row.style.cssText = getDropdownRowBaseStyle(T, { justifyContent: 'space-between' });
 
-		// Left container
 		const leftContainer = append(row, $('div'));
-		leftContainer.className = 'agent-layout-quick-menu__row-left';
-		leftContainer.style.cssText = `
-			display: flex;
-			align-items: center;
-			height: 18px;
-		`;
+		leftContainer.style.cssText = `display: flex; align-items: center; height: ${T.lineHeightRow}px;`;
 
-		// Icon container
 		if (config.iconOverlay) {
 			const iconContainer = append(leftContainer, $('span'));
-			iconContainer.className = 'agent-layout-quick-menu__icon agent-layout-quick-menu__icon--panel';
-			const iconColor = isDark ? 'rgba(228, 228, 228, 0.52)' : 'rgba(51, 51, 51, 0.52)';
 			iconContainer.style.cssText = `
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 16px;
-				height: 16px;
-				margin-right: 8px;
-				position: relative;
-				color: ${iconColor};
+				display: flex; align-items: center; justify-content: center;
+				width: ${T.iconSize}px; height: ${T.iconSize}px; margin-right: ${T.iconLabelGap}px;
+				position: relative; color: ${colors.mutedFg};
 			`;
-
-			// Icon layer 1
 			const iconLayer1 = append(iconContainer, $('span'));
-			iconLayer1.className = `codicon ${config.icon} agent-layout-quick-menu__icon-layer`;
+			iconLayer1.className = `codicon ${config.icon}`;
 			iconLayer1.setAttribute('aria-hidden', 'true');
-			iconLayer1.style.cssText = `
-				display: block;
-				width: 16px;
-				height: 16px;
-				line-height: 16px;
-				font-size: 16px;
-				text-align: center;
-				pointer-events: none;
-				position: relative;
-			`;
-
-			// Icon layer 2 (overlay)
+			iconLayer1.style.cssText = `display: block; width: ${T.iconSize}px; height: ${T.iconSize}px; line-height: ${T.iconSize}px; font-size: ${T.iconSize}px; text-align: center; pointer-events: none; position: relative;`;
 			const iconLayer2 = append(iconContainer, $('span'));
-			iconLayer2.className = `codicon ${config.iconOverlay} agent-layout-quick-menu__icon-layer agent-layout-quick-menu__icon-layer--overlay`;
+			iconLayer2.className = `codicon ${config.iconOverlay}`;
 			iconLayer2.setAttribute('aria-hidden', 'true');
-			iconLayer2.style.cssText = `
-				display: block;
-				width: 16px;
-				height: 16px;
-				line-height: 16px;
-				font-size: 16px;
-				text-align: center;
-				pointer-events: none;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				opacity: 0.4;
-			`;
+			iconLayer2.style.cssText = `display: block; width: ${T.iconSize}px; height: ${T.iconSize}px; line-height: ${T.iconSize}px; font-size: ${T.iconSize}px; text-align: center; pointer-events: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.4;`;
 		} else {
 			const icon = append(leftContainer, $('span'));
-			icon.className = `codicon ${config.icon} agent-layout-quick-menu__icon`;
-			const iconColor = isDark ? 'rgba(228, 228, 228, 0.52)' : 'rgba(51, 51, 51, 0.52)';
+			icon.className = `codicon ${config.icon}`;
 			icon.style.cssText = `
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 16px;
-				height: 16px;
-				margin-right: 8px;
-				color: ${iconColor};
-				font-size: 16px;
+				display: flex; align-items: center; justify-content: center;
+				width: ${T.iconSize}px; height: ${T.iconSize}px; margin-right: ${T.iconLabelGap}px;
+				color: ${colors.mutedFg}; font-size: ${T.iconSize}px;
 			`;
 		}
 
-		// Label
 		const label = append(leftContainer, $('span'));
-		label.className = 'agent-layout-quick-menu__label';
 		label.textContent = config.label;
-		label.style.cssText = `
-			color: ${textColor};
-			font-size: 12px;
-			font-weight: 400;
-			line-height: 18px;
-			display: block;
-			height: 18px;
-			font-family: system-ui, -apple-system, "system-ui", sans-serif;
-		`;
+		label.style.cssText = `color: ${colors.panelFg}; font-size: ${T.fontSizeSmall}px; font-weight: 400; line-height: ${T.lineHeightRow}px; display: block; height: ${T.lineHeightRow}px; font-family: system-ui, -apple-system, "system-ui", sans-serif;`;
 
-		// Right container
 		const rightContainer = append(row, $('div'));
-		rightContainer.className = 'agent-layout-quick-menu__row-right';
-		rightContainer.style.cssText = `
-			display: flex;
-			align-items: center;
-			height: 18px;
-			column-gap: 8px;
-		`;
+		rightContainer.style.cssText = `display: flex; align-items: center; height: ${T.lineHeightRow}px; column-gap: ${T.iconLabelGap}px;`;
 
-		// Keybinding
 		if (config.keybinding) {
 			const keybinding = append(rightContainer, $('span'));
-			keybinding.className = 'agent-layout-quick-menu__keybinding';
 			keybinding.textContent = config.keybinding;
-			keybinding.style.cssText = `
-				color: ${textColor};
-				font-size: 12px;
-				font-weight: 400;
-				line-height: 18px;
-				opacity: 0.4;
-				display: block;
-				height: 18px;
-			`;
+			keybinding.style.cssText = `color: ${colors.panelFg}; font-size: ${T.fontSizeSmall}px; font-weight: 400; line-height: ${T.lineHeightRow}px; opacity: 0.4; display: block; height: ${T.lineHeightRow}px;`;
 		}
 
-		// Get current state
 		let currentState = this.toggleStates.get(config.label) ?? (config.state === 'on');
-
-		// Create toggle switch using same implementation as model dropdown
-		const { switchContainer, switchOuter, bgFill, knob } = this.createToggleSwitch(currentState);
+		const { switchContainer, switchOuter, bgFill, knob } = this.createToggleSwitch(currentState, colors);
 		rightContainer.appendChild(switchContainer);
 
-		// Hover effect
-		const hoverBg = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-		this._register(addDisposableListener(row, 'mouseenter', () => {
-			row.style.backgroundColor = hoverBg;
-		}));
-		this._register(addDisposableListener(row, 'mouseleave', () => {
-			row.style.backgroundColor = 'transparent';
-		}));
-
-		// Click handler for toggle - run command then sync switch to actual visibility
+		this._register(attachDropdownRowHover(row, colors.hoverBg));
 		this._register(addDisposableListener(row, 'click', async (e: MouseEvent) => {
 			e.stopPropagation();
 			await this.commandService.executeCommand(config.commandId);
 			const visible = this.layoutService.isVisible(config.part);
 			currentState = visible;
 			this.toggleStates.set(config.label, visible);
-			this.updateToggleSwitch(switchOuter, bgFill, knob, visible);
+			this.updateToggleSwitch(switchOuter, bgFill, knob, visible, colors);
 		}));
 
 		return row;
 	}
 
-	private createSubmenuRow(label: string, currentValue: string, isDark: boolean, textColor: string): HTMLElement {
+	private createSubmenuRow(label: string, currentValue: string, colors: IVybeDropdownThemeColors): HTMLElement {
+		const T = VybeDropdownTokens;
 		const wrapper = $('div');
-		wrapper.style.cssText = `
-			display: block;
-			width: 238px;
-		`;
+		wrapper.style.cssText = `display: block; width: 100%;`;
 
 		const row = append(wrapper, $('div'));
-		row.className = 'agent-layout-quick-menu__row agent-layout-quick-menu__row--submenu';
-		row.style.cssText = `
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			height: 24px;
-			padding: 3px 8px;
-			border-radius: 4px;
-			cursor: pointer;
-			box-sizing: border-box;
-			width: 238px;
-			font-size: 12px;
-			line-height: 18px;
-		`;
+		row.className = 'vybe-dropdown-row vybe-dropdown-row--submenu';
+		row.style.cssText = getDropdownRowBaseStyle(T, { justifyContent: 'space-between' });
 
-		// Label
 		const labelSpan = append(row, $('span'));
-		labelSpan.className = 'agent-layout-quick-menu__label';
 		labelSpan.textContent = label;
-		labelSpan.style.cssText = `
-			color: ${textColor};
-			font-size: 12px;
-			font-weight: 400;
-			line-height: 18px;
-			display: block;
-			height: 18px;
-			font-family: system-ui, -apple-system, "system-ui", sans-serif;
-		`;
+		labelSpan.style.cssText = `color: ${colors.panelFg}; font-size: ${T.fontSizeSmall}px; font-weight: 400; line-height: ${T.lineHeightRow}px; display: block; height: ${T.lineHeightRow}px; font-family: system-ui, -apple-system, "system-ui", sans-serif;`;
 
-		// Value wrapper
 		const valueWrapper = append(row, $('div'));
-		valueWrapper.className = 'agent-layout-quick-menu__submenu-value-wrapper';
-		valueWrapper.style.cssText = `
-			display: flex;
-			align-items: center;
-			height: 18px;
-			column-gap: 4px;
-		`;
+		valueWrapper.style.cssText = `display: flex; align-items: center; height: ${T.lineHeightRow}px; column-gap: ${T.inlineGap}px;`;
 
-		// Current value
-		const currentValueSpan = append(valueWrapper, $('span'));
-		this.agentSidebarCurrentValueSpan = currentValueSpan;
-		currentValueSpan.className = 'agent-layout-quick-menu__submenu-current-value';
-		currentValueSpan.textContent = currentValue;
-		const currentValueColor = isDark ? 'rgba(228, 228, 228, 0.66)' : 'rgba(51, 51, 51, 0.66)';
-		currentValueSpan.style.cssText = `
-			color: ${currentValueColor};
-			font-size: 12px;
-			font-weight: 400;
-			line-height: 18px;
-			display: block;
-			height: 18px;
-		`;
+		this.agentSidebarCurrentValueSpan = append(valueWrapper, $('span'));
+		this.agentSidebarCurrentValueSpan.textContent = currentValue;
+		this.agentSidebarCurrentValueSpan.style.cssText = `color: ${colors.mutedFg}; font-size: ${T.fontSizeSmall}px; font-weight: 400; line-height: ${T.lineHeightRow}px; display: block; height: ${T.lineHeightRow}px;`;
 
-		// Chevron
-		const chevron = append(valueWrapper, $('span'));
-		this.agentSidebarChevron = chevron;
-		chevron.className = 'codicon codicon-chevron-right agent-layout-quick-menu__chevron';
-		chevron.style.cssText = `
-			color: ${textColor};
-			font-size: 13px;
-			line-height: 13px;
-			width: 13px;
-			height: 13px;
-			opacity: 0.3;
-			display: block;
-			text-align: center;
-			font-family: codicon;
-			transition: transform 0.2s ease;
-			transform: rotate(0deg);
-		`;
+		this.agentSidebarChevron = append(valueWrapper, $('span'));
+		this.agentSidebarChevron.className = 'codicon codicon-chevron-right';
+		this.agentSidebarChevron.style.cssText = `color: ${colors.panelFg}; font-size: 13px; line-height: 13px; width: 13px; height: 13px; opacity: 0.3; display: block; text-align: center; font-family: codicon; transition: transform 0.2s ease; transform: rotate(0deg);`;
 
-		// Submenu container (hidden initially)
 		this.agentSidebarSubmenu = append(wrapper, $('div'));
-		this.agentSidebarSubmenu.className = 'agent-layout-quick-menu__submenu';
-		this.agentSidebarSubmenu.style.cssText = `
-			display: none;
-			flex-direction: column;
-			width: 100%;
-		`;
+		this.agentSidebarSubmenu.className = 'vybe-dropdown-submenu';
+		this.agentSidebarSubmenu.style.cssText = 'display: none; flex-direction: column; width: 100%;';
 
-		// Submenu options
-		const options = ['Left', 'Right'];
-		options.forEach((option) => {
-			const optionElement = this.createSubmenuOption(option, option === currentValue, isDark, textColor);
-			this.agentSidebarSubmenu!.appendChild(optionElement);
+		['Left', 'Right'].forEach((option) => {
+			this.agentSidebarSubmenu!.appendChild(this.createSubmenuOption(option, option === currentValue, colors));
 		});
 
-		// Hover effect
-		const hoverBg = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-		this._register(addDisposableListener(row, 'mouseenter', () => {
-			row.style.backgroundColor = hoverBg;
-		}));
-		this._register(addDisposableListener(row, 'mouseleave', () => {
-			row.style.backgroundColor = 'transparent';
-		}));
-
-		// Click handler to toggle submenu
-		this._register(addDisposableListener(row, 'click', (e: MouseEvent) => {
-			e.stopPropagation();
-			this.toggleAgentSidebarSubmenu();
-		}));
+		this._register(attachDropdownRowHover(row, colors.hoverBg));
+		this._register(addDisposableListener(row, 'click', (e: MouseEvent) => { e.stopPropagation(); this.toggleAgentSidebarSubmenu(); }));
 
 		return wrapper;
 	}
 
-	private createSubmenuOption(label: string, isSelected: boolean, isDark: boolean, textColor: string): HTMLElement {
+	private createSubmenuOption(label: string, isSelected: boolean, colors: IVybeDropdownThemeColors): HTMLElement {
+		const T = VybeDropdownTokens;
 		const option = $('div');
-		option.className = `agent-layout-quick-menu__submenu-option ${isSelected ? 'is-selected' : ''}`;
+		option.className = `vybe-dropdown-submenu-option ${isSelected ? 'is-selected' : ''}`;
+		option.dataset.optionLabel = label;
 		option.style.cssText = `
-			display: flex;
-			align-items: center;
-			height: 24px;
-			padding: 3px 8px;
-			border-radius: 4px;
-			cursor: pointer;
-			box-sizing: border-box;
-			gap: 8px;
+			display: flex; align-items: center; justify-content: space-between; height: ${T.rowHeight}px;
+			padding: ${T.rowPaddingV}px ${T.rowPaddingH}px; margin: 0 ${T.rowMarginH}px;
+			border-radius: ${T.rowBorderRadius}px;
+			cursor: pointer; box-sizing: border-box;
+			width: calc(100% - ${T.rowMarginH * 2}px); background-color: transparent;
 		`;
 
-		// Check icon (always present, visibility controlled by CSS or opacity)
-		const checkIcon = append(option, $('span'));
-		checkIcon.className = 'codicon codicon-check';
-		const checkIconOpacity = isSelected ? '1' : '0';
-		checkIcon.style.cssText = `
-			color: ${textColor};
-			font-size: 16px;
-			line-height: 16px;
-			width: 16px;
-			height: 16px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-family: codicon;
-			opacity: ${checkIconOpacity};
-		`;
-
-		// Option text
 		const text = append(option, $('span'));
 		text.textContent = label;
-		text.style.cssText = `
-			color: ${textColor};
-			font-size: 12px;
-			line-height: 18px;
-			font-family: system-ui, -apple-system, "system-ui", sans-serif;
+		text.style.cssText = `color: ${colors.panelFg}; font-size: ${T.fontSizeSmall}px; line-height: ${T.lineHeightRow}px; font-family: system-ui, -apple-system, "system-ui", sans-serif;`;
+
+		const check = append(option, $('span'));
+		check.className = 'codicon codicon-check vybe-dropdown-submenu-option-check';
+		check.style.cssText = `
+			flex-shrink: 0; color: ${colors.panelFg}; font-size: ${T.submenuCheckSize}px; line-height: ${T.submenuCheckSize}px;
+			width: ${T.submenuCheckSize}px; height: ${T.submenuCheckSize}px; display: flex; align-items: center; justify-content: center;
+			font-family: codicon; opacity: ${isSelected ? '1' : '0'};
 		`;
 
-		// Hover effect
-		const hoverBg = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-		this._register(addDisposableListener(option, 'mouseenter', () => {
-			option.style.backgroundColor = hoverBg;
-		}));
-		this._register(addDisposableListener(option, 'mouseleave', () => {
-			option.style.backgroundColor = 'transparent';
-		}));
-
-		// Click handler: Agent Left = workbench.sideBar.location 'right', Agent Right = 'left'
+		this._register(attachDropdownRowHover(option, colors.hoverBg));
 		this._register(addDisposableListener(option, 'click', (e: MouseEvent) => {
 			e.stopPropagation();
-			const newSidebarLocation = label === 'Left' ? 'right' : 'left';
-			this.configurationService.updateValue(SIDEBAR_LOCATION_KEY, newSidebarLocation);
-			// Update current value
+			this.configurationService.updateValue(SIDEBAR_LOCATION_KEY, label === 'Left' ? 'right' : 'left');
 			this.agentSidebarCurrentValue = label;
-
-			// Update current value display
 			if (this.agentSidebarCurrentValueSpan) {
 				this.agentSidebarCurrentValueSpan.textContent = label;
 			}
-
-			// Update check icons - find all options and update their selected state
 			if (this.agentSidebarSubmenu) {
-				const allOptions = this.agentSidebarSubmenu.querySelectorAll('.agent-layout-quick-menu__submenu-option');
-				allOptions.forEach((opt) => {
-					const optElement = opt as HTMLElement;
-					const optText = optElement.querySelector('span:last-child')?.textContent;
-					const isNowSelected = optText === label;
-
-					// Update class
-					if (isNowSelected) {
-						optElement.classList.add('is-selected');
-					} else {
-						optElement.classList.remove('is-selected');
-					}
-
-					// Update check icon opacity
-					const checkIcon = optElement.querySelector('.codicon-check') as HTMLElement;
-					if (checkIcon) {
-						checkIcon.style.opacity = isNowSelected ? '1' : '0';
-					}
+				this.agentSidebarSubmenu.querySelectorAll('.vybe-dropdown-submenu-option').forEach((opt) => {
+					const el = opt as HTMLElement;
+					const now = el.dataset.optionLabel === label;
+					el.classList.toggle('is-selected', now);
+					const checkEl = el.querySelector('.vybe-dropdown-submenu-option-check') as HTMLElement;
+					if (checkEl) checkEl.style.opacity = now ? '1' : '0';
 				});
 			}
-
-			// Close submenu after selection
 			this.toggleAgentSidebarSubmenu();
 		}));
 
 		return option;
 	}
 
-	private createDivider(color: string): HTMLElement {
+	private createDivider(colors: IVybeDropdownThemeColors): HTMLElement {
 		const divider = $('div');
-		divider.className = 'agent-layout-quick-menu__divider';
-		divider.style.cssText = `
-			display: block;
-			height: 1px;
-			width: 238px;
-			background-color: ${color};
-			opacity: 0.8;
-			margin: 2px 0;
-		`;
+		divider.className = 'vybe-dropdown-divider';
+		divider.style.cssText = `${getDropdownDividerStyle(VybeDropdownTokens)} background-color: ${colors.separator}; opacity: 0.8;`;
 		return divider;
 	}
 
-	private createFooterLink(label: string, isDark: boolean, textColor: string): HTMLElement {
+	private createFooterLink(label: string, colors: IVybeDropdownThemeColors): HTMLElement {
+		const T = VybeDropdownTokens;
 		const footerLink = $('button') as HTMLButtonElement;
 		footerLink.type = 'button';
-		footerLink.className = 'agent-layout-quick-menu__footer-link';
-		footerLink.style.cssText = `
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			height: 24px;
-			padding: 3px 8px;
-			border-radius: 4px;
-			cursor: pointer;
-			box-sizing: border-box;
-			width: 238px;
-			background-color: transparent;
-			border: none;
-			outline: none;
-			font-family: -apple-system, "system-ui", sans-serif;
-			font-size: 12px;
-			line-height: 18px;
-		`;
+		footerLink.className = 'vybe-dropdown-footer-link';
+		footerLink.style.cssText = `${getDropdownRowBaseStyle(T, { justifyContent: 'space-between' })} background-color: transparent; border: none; outline: none; font-family: -apple-system, "system-ui", sans-serif;`;
 
-		// Label
 		const labelSpan = append(footerLink, $('span'));
-		labelSpan.className = 'agent-layout-quick-menu__label';
 		labelSpan.textContent = label;
-		labelSpan.style.cssText = `
-			color: ${textColor};
-			font-size: 12px;
-			font-weight: 400;
-			line-height: 18px;
-			display: flex;
-			align-items: center;
-			height: 18px;
-			font-family: system-ui, -apple-system, "system-ui", sans-serif;
-		`;
+		labelSpan.style.cssText = `color: ${colors.panelFg}; font-size: ${T.fontSizeSmall}px; font-weight: 400; line-height: ${T.lineHeightRow}px; display: flex; align-items: center; height: ${T.lineHeightRow}px; font-family: system-ui, -apple-system, "system-ui", sans-serif;`;
 
-		// Hover effect
-		const hoverBg = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-		this._register(addDisposableListener(footerLink, 'mouseenter', () => {
-			footerLink.style.backgroundColor = hoverBg;
-		}));
-		this._register(addDisposableListener(footerLink, 'mouseleave', () => {
-			footerLink.style.backgroundColor = 'transparent';
-		}));
-
-		// Click handler: open VYBE Settings editor
+		this._register(attachDropdownRowHover(footerLink, colors.hoverBg));
 		this._register(addDisposableListener(footerLink, 'click', (e: MouseEvent) => {
 			e.stopPropagation();
 			this.commandService.executeCommand('vybe.openSettingsEditor');
@@ -662,13 +401,11 @@ export class VybeSettingsDropdown extends Disposable {
 		this.agentSidebarSubmenuVisible = !this.agentSidebarSubmenuVisible;
 
 		if (this.agentSidebarSubmenuVisible) {
-			// Open: show submenu and add is-open class, rotate chevron 90deg clockwise
 			this.agentSidebarSubmenu.style.display = 'flex';
 			this.agentSidebarSubmenu.classList.add('is-open');
 			this.agentSidebarChevron.classList.add('is-open');
 			this.agentSidebarChevron.style.transform = 'rotate(90deg)';
 		} else {
-			// Close: hide submenu and remove is-open class, rotate chevron back to 0deg
 			this.agentSidebarSubmenu.style.display = 'none';
 			this.agentSidebarSubmenu.classList.remove('is-open');
 			this.agentSidebarChevron.classList.remove('is-open');
@@ -677,27 +414,21 @@ export class VybeSettingsDropdown extends Disposable {
 	}
 
 	public hide(): void {
-		if (this.backdrop) {
-			this.backdrop.remove();
-			this.backdrop = null;
+		if (this._panelDisposable) {
+			this._panelDisposable.dispose();
+			this._panelDisposable = null;
 		}
-
-		if (this.dropdownElement) {
-			this.dropdownElement.remove();
-			this.dropdownElement = null;
-			this.menuContainer = null;
-			this.agentSidebarSubmenu = null;
-			this.agentSidebarChevron = null;
-			this.agentSidebarCurrentValueSpan = null;
-			this.agentSidebarSubmenuVisible = false;
-		}
+		this.agentSidebarSubmenu = null;
+		this.agentSidebarChevron = null;
+		this.agentSidebarCurrentValueSpan = null;
+		this.agentSidebarSubmenuVisible = false;
 	}
 
 	public isVisible(): boolean {
-		return this.dropdownElement !== null;
+		return this._panelDisposable !== null;
 	}
 
-	private createToggleSwitch(isOn: boolean): { switchContainer: HTMLElement; switchOuter: HTMLElement; bgFill: HTMLElement; knob: HTMLElement } {
+	private createToggleSwitch(isOn: boolean, colors: IVybeDropdownThemeColors): { switchContainer: HTMLElement; switchOuter: HTMLElement; bgFill: HTMLElement; knob: HTMLElement } {
 		const switchContainer = $('span');
 		switchContainer.style.cssText = `
 			flex-shrink: 0;
@@ -716,11 +447,10 @@ export class VybeSettingsDropdown extends Disposable {
 			cursor: pointer;
 			transition: all 300ms;
 			overflow: hidden;
-			background: ${isOn ? '#3ecf8e' : 'rgba(128, 128, 128, 0.3)'};
+			background: ${isOn ? colors.switchOn : colors.switchOff};
 			opacity: 1;
 		`;
 
-		// Background fill (animated)
 		const bgFill = append(switchOuter, $('div'));
 		bgFill.style.cssText = `
 			border-radius: 14px;
@@ -729,20 +459,19 @@ export class VybeSettingsDropdown extends Disposable {
 			bottom: 0;
 			height: 100%;
 			left: 0;
-			background: #3ecf8e;
+			background: ${colors.switchOn};
 			opacity: ${isOn ? '1' : '0'};
 			width: ${isOn ? '100%' : '0%'};
 			transition: ${isOn ? '300ms' : '150ms'} cubic-bezier(0.4, 0, 0.2, 1);
 		`;
 
-		// Knob
 		const knob = append(switchOuter, $('div'));
 		knob.style.cssText = `
 			width: 10px;
 			height: 10px;
 			border-radius: 50%;
 			position: absolute;
-			background: white;
+			background: ${colors.switchKnob};
 			transition: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 			left: ${isOn ? 'calc(100% - 12px)' : '2px'};
 		`;
@@ -750,9 +479,8 @@ export class VybeSettingsDropdown extends Disposable {
 		return { switchContainer, switchOuter, bgFill, knob };
 	}
 
-	private updateToggleSwitch(switchOuter: HTMLElement, bgFill: HTMLElement, knob: HTMLElement, isOn: boolean): void {
-		// Update outer background
-		switchOuter.style.background = isOn ? '#3ecf8e' : 'rgba(128, 128, 128, 0.3)';
+	private updateToggleSwitch(switchOuter: HTMLElement, bgFill: HTMLElement, knob: HTMLElement, isOn: boolean, colors: IVybeDropdownThemeColors): void {
+		switchOuter.style.background = isOn ? colors.switchOn : colors.switchOff;
 
 		// Update fill
 		bgFill.style.opacity = isOn ? '1' : '0';
