@@ -443,5 +443,6 @@ import './contrib/opener/browser/opener.contribution.js';
 
 // VYBE Settings
 import './contrib/vybeSettings/browser/vybeSettings.contribution.js';
+import './contrib/vybeResources/browser/vybeResources.contribution.js';
 
 //#endregion
