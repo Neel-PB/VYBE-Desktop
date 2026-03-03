@@ -48,6 +48,9 @@ import { EditorCommandsContextActionRunner } from '../editor/editorTabsControl.j
 import { IEditorCommandsContext, IEditorPartOptionsChangeEvent, IToolbarActions } from '../../../common/editor.js';
 import { CodeWindow, mainWindow } from '../../../../base/browser/window.js';
 import { ACCOUNTS_ACTIVITY_TILE_ACTION, GLOBAL_ACTIVITY_TITLE_ACTION } from './titlebarActions.js';
+import { createVybeTitleBarAccountAction, createVybeTitleBarSettingsAction, getVybeLayoutControlEnabled, VYBE_USE_TITLEBAR_SETTINGS_BUTTON } from '../../../contrib/vybeTitlebar/browser/vybeTitlebar.js';
+import { VybeSettingsDropdown } from '../../../contrib/vybeSettings/browser/vybeSettingsDropdown.js';
+import { VybeAccountDropdown } from '../../../contrib/vybeTitlebar/browser/vybeAccountDropdown.js';
 import { IView } from '../../../../base/browser/ui/grid/grid.js';
 import { createInstantHoverDelegate } from '../../../../base/browser/ui/hover/hoverDelegateFactory.js';
 import { IBaseActionViewItemOptions } from '../../../../base/browser/ui/actionbar/actionViewItems.js';
@@ -265,9 +268,13 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 	private lastLayoutDimensions: Dimension | undefined;
 
 	private actionToolBar!: WorkbenchToolBar;
+	/** VYBE: when using title bar Settings/Account, editor actions go in a separate left toolbar. */
+	private editorToolBar: WorkbenchToolBar | undefined;
 	private readonly actionToolBarDisposable = this._register(new DisposableStore());
 	private readonly editorActionsChangeDisposable = this._register(new DisposableStore());
 	private actionToolBarElement!: HTMLElement;
+	/** VYBE: container for editor actions only (left of divider). */
+	private editorToolBarElement: HTMLElement | undefined;
 
 	private globalToolbarMenu: IMenu | undefined;
 	private layoutToolbarMenu: IMenu | undefined;
@@ -278,6 +285,13 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 	private readonly activityToolbarDisposables = this._register(new DisposableStore());
 
 	private readonly hoverDelegate: IHoverDelegate;
+
+	// VYBE: single Settings button opens VybeSettingsDropdown (layout toggles + VYBE Settings link)
+	private vybeSettingsDropdown: VybeSettingsDropdown | undefined;
+	private vybeSettingsButton: HTMLElement | undefined;
+	// VYBE: Account button to the right of Settings, opens VybeAccountDropdown (content TBD)
+	private vybeAccountDropdown: VybeAccountDropdown | undefined;
+	private vybeAccountButton: HTMLElement | undefined;
 
 	private readonly titleDisposables = this._register(new DisposableStore());
 	private titleBarStyle: TitlebarStyle;
@@ -478,7 +492,15 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 
 		// Create Toolbar Actions
 		if (hasCustomTitlebar(this.configurationService, this.titleBarStyle)) {
-			this.actionToolBarElement = append(this.rightContent, $('div.action-toolbar-container'));
+			// --- VYBE PATCH (merge-safe): One wrapper .titlebar-actions-group so [editor actions | divider | Settings/Account] have equal gap. Re-apply if upstream changes rightContent toolbar creation.
+			if (VYBE_USE_TITLEBAR_SETTINGS_BUTTON) {
+				const actionsGroup = append(this.rightContent, $('div.titlebar-actions-group'));
+				this.editorToolBarElement = append(actionsGroup, $('div.action-toolbar-editor-container'));
+				append(actionsGroup, $('div.titlebar-divider'));
+				this.actionToolBarElement = append(actionsGroup, $('div.action-toolbar-container'));
+			} else {
+				this.actionToolBarElement = append(this.rightContent, $('div.action-toolbar-container'));
+			}
 			this.createActionToolBar();
 			this.createActionToolBarMenus();
 		}
@@ -621,18 +643,35 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 
 		this.actionToolBarDisposable.clear();
 
-		this.actionToolBar = this.actionToolBarDisposable.add(this.instantiationService.createInstance(WorkbenchToolBar, this.actionToolBarElement, {
+		const toolbarOptions = {
 			contextMenu: MenuId.TitleBarContext,
 			orientation: ActionsOrientation.HORIZONTAL,
 			ariaLabel: localize('ariaLabelTitleActions', "Title actions"),
-			getKeyBinding: action => this.getKeybinding(action),
-			overflowBehavior: { maxItems: 9, exempted: [ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID, ...EDITOR_CORE_NAVIGATION_COMMANDS] },
+			getKeyBinding: (action: IAction) => this.getKeybinding(action),
 			anchorAlignmentProvider: () => AnchorAlignment.RIGHT,
-			telemetrySource: 'titlePart',
-			highlightToggledItems: this.editorActionsEnabled || this.isAuxiliary, // Only show toggled state for editor actions or auxiliary title bars
-			actionViewItemProvider: (action, options) => this.actionViewItemProvider(action, options),
+			telemetrySource: 'titlePart' as const,
+			highlightToggledItems: this.editorActionsEnabled || this.isAuxiliary,
+			actionViewItemProvider: (action: IAction, options: IBaseActionViewItemOptions) => this.actionViewItemProvider(action, options),
 			hoverDelegate: this.hoverDelegate
-		}));
+		};
+
+			// VYBE PATCH: Two toolbars when VYBE — editor (left) and Settings/Account (right). Re-apply if upstream changes createActionToolBar.
+			if (VYBE_USE_TITLEBAR_SETTINGS_BUTTON && this.editorToolBarElement) {
+				this.editorToolBar = this.actionToolBarDisposable.add(this.instantiationService.createInstance(WorkbenchToolBar, this.editorToolBarElement, {
+					...toolbarOptions,
+					overflowBehavior: { maxItems: 12, exempted: EDITOR_CORE_NAVIGATION_COMMANDS },
+				}));
+				this.actionToolBar = this.actionToolBarDisposable.add(this.instantiationService.createInstance(WorkbenchToolBar, this.actionToolBarElement, {
+					...toolbarOptions,
+					overflowBehavior: { maxItems: 9, exempted: [ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID] },
+				}));
+			} else {
+				this.editorToolBar = undefined;
+				this.actionToolBar = this.actionToolBarDisposable.add(this.instantiationService.createInstance(WorkbenchToolBar, this.actionToolBarElement, {
+					...toolbarOptions,
+					overflowBehavior: { maxItems: 9, exempted: [ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID, ...EDITOR_CORE_NAVIGATION_COMMANDS] },
+				}));
+			}
 
 		if (this.editorActionsEnabled) {
 			this.actionToolBarDisposable.add(this.editorGroupsContainer.onDidChangeActiveGroup(() => this.createActionToolBarMenus({ editorActions: true })));
@@ -646,8 +685,9 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 
 		const updateToolBarActions = () => {
 			const actions: IToolbarActions = { primary: [], secondary: [] };
+			const editorOnly: IToolbarActions = { primary: [], secondary: [] };
 
-			// --- Editor Actions
+			// --- Editor Actions (VYBE: put in editorOnly only when split; else in actions)
 			if (this.editorActionsEnabled) {
 				this.editorActionsChangeDisposable.clear();
 
@@ -655,14 +695,19 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 				if (activeGroup) {
 					const editorActions = activeGroup.createEditorActions(this.editorActionsChangeDisposable, this.isAuxiliary && this.isCompact ? MenuId.CompactWindowEditorTitle : MenuId.EditorTitle);
 
-					actions.primary.push(...editorActions.actions.primary);
-					actions.secondary.push(...editorActions.actions.secondary);
+					if (VYBE_USE_TITLEBAR_SETTINGS_BUTTON && this.editorToolBar) {
+						editorOnly.primary.push(...editorActions.actions.primary);
+						editorOnly.secondary.push(...editorActions.actions.secondary);
+					} else {
+						actions.primary.push(...editorActions.actions.primary);
+						actions.secondary.push(...editorActions.actions.secondary);
+					}
 
 					this.editorActionsChangeDisposable.add(editorActions.onDidChange(() => updateToolBarActions()));
 				}
 			}
 
-			// --- Layout Actions
+			// --- Layout Actions (right side only when VYBE)
 			if (this.layoutToolbarMenu) {
 				fillInActionBarActions(
 					this.layoutToolbarMenu.getActions(),
@@ -688,7 +733,20 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 				actions.primary.push(GLOBAL_ACTIVITY_TITLE_ACTION);
 			}
 
-			this.actionToolBar.setActions(prepareActions(actions.primary), prepareActions(actions.secondary));
+			// VYBE: single Settings button (opens VybeSettingsDropdown) instead of four layout toggles; Account button to its right
+			if (VYBE_USE_TITLEBAR_SETTINGS_BUTTON) {
+				actions.primary.push(createVybeTitleBarSettingsAction(this));
+				actions.primary.push(createVybeTitleBarAccountAction(this));
+			}
+
+			// VYBE PATCH: When split, set editor toolbar from editorOnly and right toolbar from actions (no editor actions in right). Toggle has-no-actions on editor container.
+			if (VYBE_USE_TITLEBAR_SETTINGS_BUTTON && this.editorToolBar && this.editorToolBarElement) {
+				this.editorToolBar.setActions(prepareActions(editorOnly.primary), prepareActions(editorOnly.secondary));
+				this.editorToolBarElement.classList.toggle('has-no-actions', editorOnly.primary.length === 0 && editorOnly.secondary.length === 0);
+				this.actionToolBar.setActions(prepareActions(actions.primary), prepareActions(actions.secondary));
+			} else {
+				this.actionToolBar.setActions(prepareActions(actions.primary), prepareActions(actions.secondary));
+			}
 		};
 
 		// Create/Update the menus which should be in the title tool bar
@@ -698,12 +756,19 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 
 			// The editor toolbar menu is handled by the editor group so we do not need to manage it here.
 			// However, depending on the active editor, we need to update the context and action runner of the toolbar menu.
+			// VYBE PATCH: When split, editor toolbar gets EditorCommandsContextActionRunner; right toolbar gets plain ActionRunner.
+			const editorToolbarForContext = VYBE_USE_TITLEBAR_SETTINGS_BUTTON && this.editorToolBar ? this.editorToolBar : this.actionToolBar;
 			if (this.editorActionsEnabled && this.editorService.activeEditor !== undefined) {
 				const context: IEditorCommandsContext = { groupId: this.editorGroupsContainer.activeGroup.id };
 
-				this.actionToolBar.actionRunner = this.editorToolbarMenuDisposables.add(new EditorCommandsContextActionRunner(context));
-				this.actionToolBar.context = context;
+				editorToolbarForContext.actionRunner = this.editorToolbarMenuDisposables.add(new EditorCommandsContextActionRunner(context));
+				editorToolbarForContext.context = context;
 			} else {
+				editorToolbarForContext.actionRunner = this.editorToolbarMenuDisposables.add(new ActionRunner());
+				editorToolbarForContext.context = undefined;
+			}
+			// When VYBE split: right toolbar (Settings, Account, etc.) always uses plain ActionRunner
+			if (VYBE_USE_TITLEBAR_SETTINGS_BUTTON && this.editorToolBar && this.actionToolBar !== editorToolbarForContext) {
 				this.actionToolBar.actionRunner = this.editorToolbarMenuDisposables.add(new ActionRunner());
 				this.actionToolBar.context = undefined;
 			}
@@ -803,8 +868,42 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 		return getMenuBarVisibility(this.configurationService);
 	}
 
+	// VYBE: when using single Settings button, hide the four layout toggles
 	private get layoutControlEnabled(): boolean {
+		if (getVybeLayoutControlEnabled() === false) {
+			return false;
+		}
 		return this.configurationService.getValue<boolean>(LayoutSettings.LAYOUT_ACTIONS) !== false;
+	}
+
+	getActionToolBarElement(): HTMLElement {
+		return this.actionToolBarElement;
+	}
+
+	getOrCreateVybeSettingsDropdown(anchor: HTMLElement): VybeSettingsDropdown {
+		if (this.vybeSettingsDropdown && this.vybeSettingsButton === anchor) {
+			return this.vybeSettingsDropdown;
+		}
+		if (this.vybeSettingsDropdown) {
+			this.vybeSettingsDropdown.dispose();
+			this.vybeSettingsDropdown = undefined;
+		}
+		this.vybeSettingsDropdown = this._register(this.instantiationService.createInstance(VybeSettingsDropdown, anchor));
+		this.vybeSettingsButton = anchor;
+		return this.vybeSettingsDropdown;
+	}
+
+	getOrCreateVybeAccountDropdown(anchor: HTMLElement): VybeAccountDropdown {
+		if (this.vybeAccountDropdown && this.vybeAccountButton === anchor) {
+			return this.vybeAccountDropdown;
+		}
+		if (this.vybeAccountDropdown) {
+			this.vybeAccountDropdown.dispose();
+			this.vybeAccountDropdown = undefined;
+		}
+		this.vybeAccountDropdown = this._register(this.instantiationService.createInstance(VybeAccountDropdown, anchor));
+		this.vybeAccountButton = anchor;
+		return this.vybeAccountDropdown;
 	}
 
 	protected get isCommandCenterVisible() {

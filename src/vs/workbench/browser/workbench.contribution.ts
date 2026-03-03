@@ -14,6 +14,7 @@ import { WorkbenchPhase, registerWorkbenchContribution2 } from '../common/contri
 import { NotificationsPosition, NotificationsSettings } from '../common/notifications.js';
 import { CustomEditorLabelService } from '../services/editor/common/customEditorLabelService.js';
 import { ActivityBarPosition, EditorActionsLocation, EditorTabsMode, LayoutSettings } from '../services/layout/browser/layoutService.js';
+import { VYBE_USE_TITLEBAR_SETTINGS_BUTTON } from '../contrib/vybeTitlebar/browser/vybeTitlebar.js';
 import { defaultWindowTitle, defaultWindowTitleSeparator } from './parts/titlebar/windowTitle.js';
 
 const registry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
@@ -78,7 +79,8 @@ const registry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Con
 					localize('workbench.editor.editorActionsLocation.hidden', "Editor actions are not shown."),
 				],
 				'markdownDescription': localize('editorActionsLocation', "Controls where the editor actions are shown."),
-				'default': 'default'
+				// VYBE PATCH (merge-safe): Default editor actions to title bar when VYBE title bar (Settings/Account) is on. Re-apply if upstream changes EDITOR_ACTIONS_LOCATION.
+				'default': VYBE_USE_TITLEBAR_SETTINGS_BUTTON ? EditorActionsLocation.TITLEBAR : 'default'
 			},
 			'workbench.editor.alwaysShowEditorActions': {
 				'type': 'boolean',

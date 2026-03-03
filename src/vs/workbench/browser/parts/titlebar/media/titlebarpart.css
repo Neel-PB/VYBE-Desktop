@@ -377,10 +377,58 @@
 	color: white;
 }
 
-/* Action Tool Bar Controls */
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container {
+/* --- VYBE PATCH (merge-safe): Title bar split layout [editor actions | divider | Vybe Settings/Account].
+ * One wrapper .titlebar-actions-group with gap; divider 16px height, button background. Re-apply if upstream changes titlebar-right / action-toolbar-container. */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	gap: 10px;
+	margin-left: auto;
+	margin-right: 8px; /* inset from right edge / window controls so Vybe buttons don’t hit the wall */
+	position: relative;
+	z-index: 2500;
+	-webkit-app-region: no-drag;
+}
+
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group > .action-toolbar-editor-container {
 	display: none;
-	padding-right: 4px;
+	flex-grow: 0;
+	flex-shrink: 0;
+	height: 100%;
+	align-items: center;
+}
+
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group > .action-toolbar-editor-container:not(.has-no-actions) {
+	display: flex;
+}
+
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group > .titlebar-divider {
+	width: 1px;
+	height: 16px;
+	min-width: 1px;
+	flex-shrink: 0;
+	background-color: var(--vscode-button-background);
+	align-self: center;
+}
+
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group > .action-toolbar-editor-container.has-no-actions + .titlebar-divider {
+	display: none;
+}
+
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group > .action-toolbar-editor-container .monaco-toolbar .actions-container {
+	gap: 4px;
+}
+
+/* When VYBE split: no margin-left so group stays tight; add padding so divider isn’t flush on Settings */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group > .action-toolbar-container {
+	margin-left: 0;
+}
+
+/* Action Tool Bar Controls (direct child when non-VYBE, or inside .titlebar-actions-group when VYBE) */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container,
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group > .action-toolbar-container {
+	display: none;
 	flex-grow: 0;
 	flex-shrink: 0;
 	text-align: center;
@@ -394,34 +442,37 @@
 	margin-left: auto;
 }
 
+/* Gap between last title bar action (Settings/Account) and window controls. Tune via variable to reduce. */
 .monaco-workbench.mac:not(.web) .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container {
-	right: 8px;
+	--titlebar-action-toolbar-right-offset: 8px;
+	right: var(--titlebar-action-toolbar-right-offset);
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container:not(.has-no-actions) {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container:not(.has-no-actions),
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .titlebar-actions-group > .action-toolbar-container:not(.has-no-actions) {
 	display: flex;
 	justify-content: center;
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .codicon {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right .action-toolbar-container .codicon {
 	color: inherit;
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .action-item {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right .action-toolbar-container .monaco-action-bar .action-item {
 	display: flex;
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .badge {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right .action-toolbar-container .monaco-action-bar .badge {
 	margin-left: 8px;
 	display: flex;
 	align-items: center;
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .action-item.icon .badge {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right .action-toolbar-container .monaco-action-bar .action-item.icon .badge {
 	margin-left: 0px;
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .badge .badge-content {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right .action-toolbar-container .monaco-action-bar .badge .badge-content {
 	padding: 3px 5px;
 	border-radius: 11px;
 	font-size: 9px;
@@ -435,7 +486,7 @@
 	position: relative;
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .action-item.icon .badge.compact {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right .action-toolbar-container .monaco-action-bar .action-item.icon .badge.compact {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -447,13 +498,13 @@
 	z-index: 2;
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .action-item.icon .badge.compact .badge-content::before {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right .action-toolbar-container .monaco-action-bar .action-item.icon .badge.compact .badge-content::before {
 	mask-size: 12px;
 	-webkit-mask-size: 12px;
 	top: 2px;
 }
 
-.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .action-item.icon .badge.compact .badge-content {
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right .action-toolbar-container .monaco-action-bar .action-item.icon .badge.compact .badge-content {
 	position: absolute;
 	top: 10px;
 	right: 0px;
