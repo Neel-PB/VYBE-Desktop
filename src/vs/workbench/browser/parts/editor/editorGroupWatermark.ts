@@ -283,7 +283,7 @@ export class EditorGroupWatermark extends Disposable {
 
 		const openProject = () => this.commandService.executeCommand('workbench.action.files.openFolder');
 		const cloneRepo = () => this.commandService.executeCommand('git.clone');
-		// VYBE PATCH (merge-safe): Connect via SSH opens Remote menu (SSH, WSL, etc.); same as old VYBE — do not install-on-click
+		// VYBE PATCH (merge-safe): Connect via SSH opens Remote menu (SSH, WSL, etc.); same as old VYBE. Re-apply if upstream changes empty-state buttons.
 		const connectSsh = () => this.commandService.executeCommand('workbench.action.remote.showMenu');
 
 		this.addVybeButton(buttonsRow, 'folder', localize('watermark.openProject', 'Open project'), openProject);
