@@ -37,12 +37,11 @@ export function hygiene(some: NodeJS.ReadWriteStream | string[] | undefined, run
 	const productJson = es.through(function (file: VinylFile) {
 		const product = JSON.parse(file.contents!.toString('utf8'));
 
-		// VYBE: we ship with extensionsGallery for VS Code marketplace; allow when builtInExtensions use vsix (our fork)
-		const hasVybeBuiltins = Array.isArray(product.builtInExtensions) && product.builtInExtensions.some((e: { vsix?: string }) => e.vsix);
-		if (product.extensionsGallery && !hasVybeBuiltins) {
-			console.error(`product.json: Contains 'extensionsGallery'`);
-			errorCount++;
-		}
+		// VYBE PATCH (merge-safe): Allow extensionsGallery for VS Code marketplace. Re-apply if upstream restores strict check.
+		// if (product.extensionsGallery) {
+		// 	console.error(`product.json: Contains 'extensionsGallery'`);
+		// 	errorCount++;
+		// }
 
 		this.emit('data', file);
 	});
@@ -289,8 +288,7 @@ if (import.meta.main) {
 					process.exit(1);
 				}
 
-				const some = out.split(/\r?\n/).filter((l) => !!l)
-					.filter((p) => !p.endsWith('.vsix')); // VYBE: skip binary built-in extension packages
+				const some = out.split(/\r?\n/).filter((l) => !!l);
 
 				if (some.length > 0) {
 					console.log('Reading git index versions...');
