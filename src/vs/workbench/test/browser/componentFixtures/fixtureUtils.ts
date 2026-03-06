@@ -479,18 +479,7 @@ export interface ThemedFixtureGroupLabels {
 	readonly blocksCi?: true;
 }
 
-function resolveLabels(labels: ThemedFixtureGroupLabels | undefined): string[] {
-	const result: string[] = [];
-	if (labels?.kind === 'screenshot') {
-		result.push('.screenshot');
-	} else if (labels?.kind === 'animated') {
-		result.push('animated');
-	}
-	if (labels?.blocksCi) {
-		result.push('blocks-ci');
-	}
-	return result;
-}
+
 
 export interface ComponentFixtureContext {
 	container: HTMLElement;
