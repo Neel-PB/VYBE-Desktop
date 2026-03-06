@@ -7,6 +7,8 @@ import { IThemeService } from '../../../../platform/theme/common/themeService.js
 import { menuBackground, menuForeground, menuBorder, menuSeparatorBackground } from '../../../../platform/theme/common/colors/menuColors.js';
 import { listHoverBackground, listDeemphasizedForeground, listInactiveSelectionBackground } from '../../../../platform/theme/common/colors/listColors.js';
 import { buttonBackground, buttonForeground } from '../../../../platform/theme/common/colors/inputColors.js';
+import { ColorScheme } from '../../../../platform/theme/common/theme.js';
+import { VybeDropdownTokens } from './vybeDropdownTokens.js';
 
 /**
  * Resolved theme colors for Vybe dropdowns. Uses VS Code's menu/list/button color tokens
@@ -25,12 +27,14 @@ export interface IVybeDropdownThemeColors {
 	hoverBg: string;
 	/** Muted/secondary text (e.g. current value, icon). */
 	mutedFg: string;
-	/** Toggle switch "on" fill – same as Vybe Settings (button background). */
+	/** Toggle switch "on" fill - same as Vybe Settings (button background). */
 	switchOn: string;
 	/** Toggle switch "off" track. */
 	switchOff: string;
 	/** Toggle switch knob (contrasts with switchOn). */
 	switchKnob: string;
+	/** Panel shadow (theme-aware). */
+	shadow: string;
 }
 
 const fallback = {
@@ -51,6 +55,7 @@ const fallback = {
  */
 export function getVybeDropdownThemeColors(themeService: IThemeService): IVybeDropdownThemeColors {
 	const theme = themeService.getColorTheme();
+	const isDark = theme.type === ColorScheme.DARK || theme.type === ColorScheme.HIGH_CONTRAST_DARK;
 	return {
 		panelBg: theme.getColor(menuBackground)?.toString() ?? fallback.panelBg,
 		panelFg: theme.getColor(menuForeground)?.toString() ?? fallback.panelFg,
@@ -61,5 +66,6 @@ export function getVybeDropdownThemeColors(themeService: IThemeService): IVybeDr
 		switchOn: theme.getColor(buttonBackground)?.toString() ?? fallback.switchOn,
 		switchOff: theme.getColor(listInactiveSelectionBackground)?.toString() ?? fallback.switchOff,
 		switchKnob: theme.getColor(buttonForeground)?.toString() ?? fallback.switchKnob,
+		shadow: isDark ? VybeDropdownTokens.shadowDark : VybeDropdownTokens.shadowLight,
 	};
 }

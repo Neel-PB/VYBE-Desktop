@@ -51,6 +51,10 @@ export const VybeDropdownTokens = {
 	categoryLabelPaddingBottom: 2,
 	/** Submenu option check icon size. */
 	submenuCheckSize: 13,
+	/** Panel shadow (dark themes). */
+	shadowDark: 'rgba(0, 0, 0, 0.5) 0px 16px 23px 0px',
+	/** Panel shadow (light themes). */
+	shadowLight: 'rgba(0, 0, 0, 0.1) 0px 16px 23px 0px',
 	zIndexBackdrop: 2550,
 	zIndexPanel: 2551,
 } as const;

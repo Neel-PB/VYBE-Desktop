@@ -71,7 +71,7 @@ export function showVybeDropdownPanel(
 		border: 1px solid ${c.separator};
 		border-radius: ${VybeDropdownTokens.panelBorderRadius}px;
 		padding: ${VybeDropdownTokens.panelPaddingV}px ${VybeDropdownTokens.panelPaddingH}px;
-		box-shadow: none;
+		box-shadow: ${c.shadow};
 		color: ${c.panelFg};
 		font-family: -apple-system, "system-ui", sans-serif;
 		font-size: ${VybeDropdownTokens.fontSize}px;
@@ -84,7 +84,9 @@ export function showVybeDropdownPanel(
 	applyPanelStyles(colors);
 
 	const themeListener = themeService.onDidColorThemeChange(() => {
-		if (closed) return;
+		if (closed) {
+			return;
+		}
 		const newColors = getVybeDropdownThemeColors(themeService);
 		applyPanelStyles(newColors);
 		const content = contentDisposable as IVybeDropdownContentResult | undefined;
@@ -97,7 +99,9 @@ export function showVybeDropdownPanel(
 
 	let closed = false;
 	const outsideHandler = (e: MouseEvent) => {
-		if (closed) return;
+		if (closed) {
+			return;
+		}
 		const target = e.target as Node;
 		if (!wrapper.contains(target) && !anchor.contains(target)) {
 			close();
@@ -105,7 +109,9 @@ export function showVybeDropdownPanel(
 	};
 
 	function close(): void {
-		if (closed) return;
+		if (closed) {
+			return;
+		}
 		closed = true;
 		themeListener.dispose();
 		contentDisposable?.dispose();
