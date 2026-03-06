@@ -200,6 +200,7 @@ class EmptyTextEditorHintContentWidget extends Disposable implements IContentWid
 	private getHint() {
 		const hasInlineChatProvider = this.chatAgentService.getActivatedAgents().filter(candidate => candidate.locations.includes(ChatAgentLocation.EditorInline)).length > 0;
 
+		// VYBE PATCH (merge-safe): Single link handler for simplified hint
 		const hintHandler: IContentActionHandler = {
 			disposables: this._store,
 			callback: (index, event) => {
@@ -208,17 +209,14 @@ class EmptyTextEditorHintContentWidget extends Disposable implements IContentWid
 						hasInlineChatProvider ? askSomething(event.browserEvent) : languageOnClickOrTap(event.browserEvent);
 						break;
 					case '1':
-						hasInlineChatProvider ? languageOnClickOrTap(event.browserEvent) : this.disableHint();
-						break;
-					case '2':
-						this.disableHint();
+						hasInlineChatProvider ? this.disableHint() : this.disableHint();
 						break;
 				}
 			}
 		};
 
-		// the actual command handlers...
-		const askSomethingCommandId = 'inlineChat.start';
+		// VYBE PATCH (merge-safe): Use VYBE inline composer instead of VS Code inline chat
+		const askSomethingCommandId = 'vybeInlineComposer.start';
 		const askSomething = async (e: UIEvent) => {
 			e.stopPropagation();
 			this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
@@ -242,28 +240,24 @@ class EmptyTextEditorHintContentWidget extends Disposable implements IContentWid
 		const keybindingsLookup = [askSomethingCommandId, ChangeLanguageAction.ID];
 		const keybindingLabels = keybindingsLookup.map(id => this.keybindingService.lookupKeybinding(id)?.getLabel());
 
-		const hintMsg = (hasInlineChatProvider ? localize({
+		// VYBE PATCH (merge-safe): Simplified empty editor hint matching Cursor style
+		const hintMsg = hasInlineChatProvider ? localize({
 			key: 'emptyTextEditorHintWithInlineChat',
-			comment: [
-				'Preserve double-square brackets and their order',
-				'language refers to a programming language'
-			]
-		}, '[[Generate code]] ({0}), or [[select a language]] ({1}). Start typing to dismiss or [[don\'t show]] this again.', keybindingLabels.at(0) ?? '', keybindingLabels.at(1) ?? '') : localize({
+			comment: ['Preserve double-square brackets and their order']
+		}, '[[Press {0} to generate code.]] Start typing to dismiss.', keybindingLabels.at(0) ?? '⌘I') : localize({
 			key: 'emptyTextEditorHintWithoutInlineChat',
-			comment: [
-				'Preserve double-square brackets and their order',
-				'language refers to a programming language'
-			]
-		}, '[[Select a language]] ({0}) to get started. Start typing to dismiss or [[don\'t show]] this again.', keybindingLabels.at(1) ?? '')).replaceAll(' ()', '');
+			comment: ['Preserve double-square brackets and their order']
+		}, '[[Select a language]] ({0}) to get started. Start typing to dismiss.', keybindingLabels.at(1) ?? '');
 		const hintElement = renderFormattedText(hintMsg, {
 			actionHandler: hintHandler,
 			renderCodeSegments: false,
 		});
 		hintElement.style.fontStyle = 'italic';
 
+		// VYBE PATCH (merge-safe): Simplified aria label
 		const ariaLabel = hasInlineChatProvider ?
-			localize('defaultHintAriaLabelWithInlineChat', 'Execute {0} to ask a question, execute {1} to select a language and get started. Start typing to dismiss.', ...keybindingLabels) :
-			localize('defaultHintAriaLabelWithoutInlineChat', 'Execute {0} to select a language and get started. Start typing to dismiss.', ...keybindingLabels);
+			localize('defaultHintAriaLabelWithInlineChat', 'Press {0} to generate code. Start typing to dismiss.', keybindingLabels.at(0) ?? '⌘I') :
+			localize('defaultHintAriaLabelWithoutInlineChat', 'Execute {0} to select a language and get started. Start typing to dismiss.', keybindingLabels.at(1) ?? '');
 		// eslint-disable-next-line no-restricted-syntax
 		for (const anchor of hintElement.querySelectorAll('a')) {
 			anchor.style.cursor = 'pointer';

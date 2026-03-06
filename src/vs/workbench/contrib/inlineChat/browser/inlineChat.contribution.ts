@@ -89,7 +89,8 @@ MenuRegistry.appendMenuItem(MENU_INLINE_CHAT_WIDGET_STATUS, cancelActionMenuItem
 
 // --- actions ---
 
-registerAction2(InlineChatActions.StartSessionAction);
+// VYBE PATCH (merge-safe): Disabled StartSessionAction (⌘I) — replaced by vybeInlineComposer.start
+// registerAction2(InlineChatActions.StartSessionAction);
 registerAction2(InlineChatActions.AskInChatAction);
 registerAction2(InlineChatActions.FocusInlineChat);
 registerAction2(InlineChatActions.SubmitInlineChatInputAction);
