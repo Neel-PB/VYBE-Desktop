@@ -4,27 +4,9 @@ When pulling from `upstream/main`, re-apply or re-verify VYBE overlay changes so
 
 **Patch markers:** Search for `VYBE:` or `VYBE PATCH (merge-safe)` (or `VYBE PATCH:`) in the repo to find all overlay comments. After resolving merge conflicts, re-apply any lost VYBE blocks using these search terms.
 
-## Current uncommitted / modified files (checklist for merge)
+## Overlay checklist for merge
 
-Before merging, ensure these are committed or stashed as needed. Use this list to verify each is either (a) in the overlay table below with a patch hint, or (b) a new VYBE-only file (keep on merge).
-
-| Status | File | In this doc |
-|--------|------|-------------|
-| M | `build/hygiene.ts` | Build: allow extensionsGallery (see Build & product) |
-| M | `docs/MERGE_UPSTREAM.md` | This file |
-| M | `scripts/download-remote-ssh-vsix.sh` | Remote-SSH prepackaging |
-| M | `src/.../editor.contribution.ts` | VYBE overlay (Editor Actions Position) |
-| M | `src/.../editorGroupWatermark.ts` | Editor empty state + Connect via SSH patch |
-| M | `src/.../titlebar/media/titlebarpart.css` | VYBE overlay (title bar split) |
-| M | `src/.../titlebar/titlebarPart.ts` | VYBE overlay (title bar) |
-| M | `src/.../workbench.contribution.ts` | VYBE overlay (editor actions default) |
-| M | `src/.../vybeSettings/browser/vybeSettingsDropdown.ts` | vybeSettings contrib |
-| M | `src/.../workbench.common.main.ts` | Product and workbench registration |
-| ?? | `src/.../contrib/vybeDropdown/` | VYBE overlay (shared dropdown) |
-| ?? | `src/.../contrib/vybeResources/` | Vybe Resources contrib |
-| ?? | `src/.../contrib/vybeTitlebar/` | VYBE title bar contrib |
-
-Also ensure **`product.json`** (builtInExtensions + extensionsGallery) and **`build/remote-ssh/*.vsix`** (if committed) are in the merge scope. **`build/hygiene.ts`** must allow `extensionsGallery` (see Build & product section).
+Before merging upstream, verify each of the following is either (a) in the overlay table below with a patch hint, or (b) a new VYBE-only file (keep on merge). Also ensure **`product.json`** (builtInExtensions + extensionsGallery) and **`build/remote-ssh/*.vsix`** (if committed) are in the merge scope. **`build/hygiene.ts`** must allow `extensionsGallery` (see Build & product section).
 
 ## VYBE overlay files (customizations)
 
@@ -43,7 +25,7 @@ Search for `VYBE:` or `VYBE PATCH (merge-safe)` in the repo to find all overlay 
 | `src/vs/workbench/browser/parts/panel/panelPart.ts` | useVybeTabStyle: true in getCompositeBarOptions |
 | `src/vs/workbench/browser/parts/auxiliarybar/auxiliaryBarPart.ts` | useVybeTabStyle: true in getCompositeBarOptions |
 | `src/vs/workbench/browser/parts/compositeBar.ts` | useVybeTabStyle in ICompositeBarOptions and when creating view item |
-| `src/vs/workbench/browser/parts/compositeBarActions.ts` | VYBE tab DOM (class, label wrapper, truncation), updateStyles skip, _updateTruncationClass |
+| `src/vs/workbench/browser/parts/compositeBarActions.ts` | VYBE tab DOM (class, label wrapper, truncation), updateStyles skip, _updateTruncationClass; **VYBE chat tab close button** (`data-vybe-chat` attr, close codicon, hover show/hide, `vybeChat.closeChat` command). Search for `VYBE:` / `data-vybe-chat`. |
 | `src/vs/workbench/browser/parts/editor/editor.contribution.ts` | **VYBE PATCH:** Hide "Editor Actions Position" from editor tab bar right-click when `VYBE_USE_TITLEBAR_SETTINGS_BUTTON` (we keep editor actions in title bar only). Search for `VYBE PATCH` / `EditorTabsBarContext`. |
 | `src/vs/workbench/browser/parts/titlebar/titlebarPart.ts` | **VYBE:** When `VYBE_USE_TITLEBAR_SETTINGS_BUTTON`: (1) One wrapper `.titlebar-actions-group` with [editor toolbar \| divider \| Settings/Account]; (2) two WorkbenchToolBars (editor left, actions right); (3) editor actions in `editorOnly` only when split; (4) Settings (VybeSettingsDropdown) + Account (VybeAccountDropdown) on right; (5) context/actionRunner split. Search for `VYBE PATCH` / `VYBE:` / `titlebar-actions-group`. |
 | `src/vs/workbench/browser/parts/titlebar/media/titlebarpart.css` | **VYBE PATCH:** Title bar split layout — `.titlebar-actions-group` (flex, gap 10px, margin-right 8px), `.action-toolbar-editor-container`, `.titlebar-divider` (16px height, button background), rules for when container is inside group. Search for `VYBE PATCH` / `titlebar-actions-group`. |
@@ -57,10 +39,36 @@ When `VYBE_USE_TITLEBAR_SETTINGS_BUTTON`, editor actions sit left of a vertical 
 - **titlebarPart.ts:** Single wrapper `.titlebar-actions-group` containing editor toolbar container, divider div, and action toolbar container; two `WorkbenchToolBar` instances when VYBE; editor actions go to left toolbar only; right toolbar gets Settings + Account; context/actionRunner set per toolbar.
 - **titlebarpart.css:** Styles for `.titlebar-actions-group` (flex, gap 10px, margin-right 8px), editor container, divider (1px × 16px, `var(--vscode-button-background)`), and action-toolbar-container when inside the group.
 
-| `src/vs/workbench/contrib/vybeDropdown/` | **VYBE (shared dropdown):** `vybeDropdownTokens.ts` (layout/sizing), `vybeDropdownTheme.ts` (theme colors from menu/list tokens), `vybeDropdownPanel.ts` (`showVybeDropdownPanel` reusable shell). Used by VybeSettingsDropdown and can be used by vybeChat. |
+| `src/vs/workbench/contrib/vybeDropdown/` | **VYBE (shared dropdown):** `vybeDropdownTokens.ts` (layout/sizing + shadow tokens), `vybeDropdownTheme.ts` (theme colors from menu/list tokens + theme-aware shadow), `vybeDropdownPanel.ts` (`showVybeDropdownPanel` reusable shell). Used by VybeSettingsDropdown and vybeChat. |
 
 | `src/vs/workbench/contrib/vybeResources/` | **VYBE (Resources):** Resources modal/menu (title "Resources"), tabs (Blog, Docs, Changelog, Messages), design tokens, editor input. Registered in workbench.common.main.ts. Keep entire folder on merge. |
 | `src/vs/workbench/contrib/vybeTitlebar/` | **VYBE (title bar):** `createVybeTitleBarSettingsAction`, `createVybeTitleBarAccountAction`, `getVybeLayoutControlEnabled`, `VYBE_USE_TITLEBAR_SETTINGS_BUTTON`; VybeAccountDropdown. Keep entire folder on merge. |
+| `src/vs/workbench/contrib/chat/browser/chatParticipant.contribution.ts` | **VYBE:** Native VS Code chat view/container registration disabled (block-commented). Vybe Chat replaces it. Search for `VYBE:` to re-apply after merge. Keep the `chatParticipantExtensionPoint` and contribution class active; only the view container + view descriptor registration is commented out. |
+
+## Vendored Lexical editor
+
+Lexical (rich-text editor framework) is bundled as a vendored ESM file for use in VS Code's browser context (which cannot resolve bare npm specifiers).
+
+| Item | Notes |
+|------|--------|
+| `package.json` | `lexical`, `@lexical/clipboard`, `@lexical/history`, `@lexical/plain-text`, `@lexical/selection`, `@lexical/utils` (^0.41.0) added to dependencies. |
+| `build/scripts/bundle-lexical.sh` | Bundles all Lexical packages into a single vendored ESM file via esbuild. Run from repo root: `bash build/scripts/bundle-lexical.sh`. |
+| `src/vs/base/common/lexical/lexical.js` | Generated vendored bundle (~587KB). **DO NOT EDIT** — regenerate with the build script. |
+| `src/vs/base/common/lexical/lexical.d.ts` | TypeScript declarations re-exporting types from npm packages (resolved at compile time). Update when adding new Lexical exports. |
+
+Additive; no upstream equivalent. After merge, ensure Lexical deps in `package.json` and the `src/vs/base/common/lexical/` directory are preserved. If Lexical version changes, re-run `bundle-lexical.sh`.
+
+## VYBE Chat (contrib)
+
+Custom chat UI replacing VS Code's native chat panel. Includes Lexical-based composer with mention pills, model dropdown, image attachments, session management, history, and past chats.
+
+| Item | Notes |
+|------|--------|
+| `src/vs/workbench/contrib/vybeChat/` | **VYBE (new contrib):** Full chat implementation — composer (Lexical editor, mention pills, context pills, model dropdown, image attachments), chat view pane, actions, contribution registrations (chat, sessions, initialization, conversation index, participant), design tokens, dropdown theme/tokens, history command runner, past chats panel, sessions service, constants, icon. Keep entire folder on merge. |
+| `src/vs/workbench/contrib/chat/browser/chatParticipant.contribution.ts` | **VYBE overlay:** Native chat view/container registration block-commented. Search for `VYBE:` comments. The `chatParticipantExtensionPoint` and `ChatExtensionPointHandler` contribution class remain active. |
+| `src/vs/workbench/workbench.common.main.ts` | Registers `./contrib/vybeChat/browser/contribution/vybeChat.contribution.js`. |
+
+After merge, ensure `contrib/vybeChat/` is preserved. Re-verify `chatParticipant.contribution.ts` overlay (search for `VYBE:`) and `workbench.common.main.ts` vybeChat import.
 
 ## Theme extension (Vybe Dark / Vybe Light)
 
@@ -89,9 +97,9 @@ Reference: `docs/editor-watermark-no-repo-cursor-reference.md`. After merge, re-
 | File | Change |
 |------|--------|
 | `product.json` | `extensionsGallery` block (serviceUrl, itemUrl, controlUrl, recommendationsUrl) for VS Code marketplace. **Built-in Remote-SSH:** `builtInExtensions` includes `ms-vscode-remote.remote-ssh` with `vsix` and `sha256` pointing to `build/remote-ssh/ms-vscode-remote.remote-ssh-0.113.1.vsix`. Do not drop this entry or the `vsix`/`sha256` on merge. |
-| `src/vs/workbench/workbench.common.main.ts` | Import and register `./contrib/vybeSettings/browser/vybeSettings.contribution.js` and `./contrib/vybeResources/browser/vybeResources.contribution.js`. |
+| `src/vs/workbench/workbench.common.main.ts` | Import and register `./contrib/vybeChat/browser/contribution/vybeChat.contribution.js`, `./contrib/vybeSettings/browser/vybeSettings.contribution.js`, and `./contrib/vybeResources/browser/vybeResources.contribution.js`. |
 
-After merge, re-add the VYBE Settings and Vybe Resources imports if upstream adds new contributions; ensure product.json `extensionsGallery` and `builtInExtensions` (including Remote-SSH vsix) are not overwritten.
+After merge, re-add the VYBE Chat, VYBE Settings, and Vybe Resources imports if upstream adds new contributions; ensure product.json `extensionsGallery` and `builtInExtensions` (including Remote-SSH vsix) are not overwritten.
 
 ## Remote-SSH prepackaging (built-in extension)
 
@@ -119,7 +127,7 @@ Custom Settings UI contribution. Not in upstream.
 
 | Item | Notes |
 |------|--------|
-| `src/vs/workbench/contrib/vybeSettings/` | New contrib: Vybe Settings editor, dropdown, tabs (General, Models, Agents, Beta, Cloud Agents, Indexing Docs, Network, Rules/Commands, Tools/MCP, Plan Usage, Docs, Hooks, Plugins, Marketplace, etc.), design tokens, theme utils, stubs (indexService, indexingConfiguration, modelHoverPopup, vybeLLMModelService). |
+| `src/vs/workbench/contrib/vybeSettings/` | New contrib: Vybe Settings editor, dropdown, tabs (General, Models, Agents, Beta, Cloud Agents, Indexing Docs, Network, Rules/Commands, Tools/MCP, Plan Usage, Docs, Hooks, Plugins, Marketplace, etc.), design tokens, theme utils, stubs (indexService, indexingConfiguration, modelHoverPopup, vybeLLMModelService). **Tab-specific commands:** `vybe.openSettingsEditor.models` and `vybe.openSettingsEditor.indexing-docs` open the editor to a specific tab via `VybeSettingsEditorInput(initialTabId)`. |
 | `src/vs/workbench/workbench.common.main.ts` | Registers vybeSettings contribution (see above). |
 
 Keep entire `contrib/vybeSettings/` on merge. Reference: `docs/vybe-settings-plan-usage-dom-reference.md`, `docs/vybe-settings-sidebar-comparison.md`, `docs/vybe-settings-scroll-issue-identification.md`.
@@ -156,6 +164,7 @@ Use these to re-find VYBE blocks after resolving merge conflicts:
 | `titlebarpart.css` | `VYBE PATCH (merge-safe)` or `titlebar-actions-group` |
 | `editorGroupWatermark.ts` | `VYBE PATCH (merge-safe)` or `workbench.action.remote.showMenu` |
 | `build/hygiene.ts` | `VYBE PATCH (merge-safe)` or `extensionsGallery` |
+| `chatParticipant.contribution.ts` | `VYBE:` (block comment disabling native chat view) |
 | Other overlay (activitybar, statusbar, compositeBar*, etc.) | `VYBE:` |
 
 ## After merging upstream
@@ -168,8 +177,10 @@ Use these to re-find VYBE blocks after resolving merge conflicts:
    - **Title bar split:** `editor.contribution.ts`, `workbench.contribution.ts`, `titlebarPart.ts`, `titlebarpart.css` — search for `VYBE PATCH` / `titlebar-actions-group`.
    - **Editor empty state / Connect via SSH:** `editorGroupWatermark.ts` — search for `VYBE PATCH (merge-safe)` or `workbench.action.remote.showMenu`; ensure Connect via SSH runs Remote menu, not install-on-click.
    - **Product/build:** `product.json` — keep `extensionsGallery` and `builtInExtensions` (including Remote-SSH vsix entry). `build/hygiene.ts` — keep the `extensionsGallery` check commented out; search for `VYBE PATCH (merge-safe)`.
+   - **Native chat disabled:** `chatParticipant.contribution.ts` — search for `VYBE:` and ensure the view container + view descriptor block remains commented out.
+   - **Lexical vendor:** `src/vs/base/common/lexical/` and `build/scripts/bundle-lexical.sh` — ensure preserved. If Lexical version bumped in `package.json`, re-run `bundle-lexical.sh`.
 
-3. **New contribs:** Ensure `src/vs/workbench/contrib/vybeResources/`, `vybeDropdown/`, `vybeTitlebar/` are still present and that `workbench.common.main.ts` still imports vybeSettings and vybeResources.
+3. **New contribs:** Ensure `src/vs/workbench/contrib/vybeChat/`, `vybeResources/`, `vybeDropdown/`, `vybeTitlebar/` are still present and that `workbench.common.main.ts` still imports vybeChat, vybeSettings, and vybeResources.
 
 4. **Re-export patches** (optional): after resolving conflicts, regenerate patches so the next merge is clean.
 
@@ -182,24 +193,6 @@ Use these to re-find VYBE blocks after resolving merge conflicts:
 Use this to group uncommitted changes into logical commits. Format: **type(scope): short description**.
 
 **Types:** `feat` (user-facing), `fix`, `docs`, `style` (UI/CSS, no logic), `refactor`, `chore` (config, build, tooling).
-
-**Suggested commits (in order):**
-
-| Commit | Files | Message |
-|--------|--------|--------|
-| 1 | `product.json` | `chore(product): add extensionsGallery and builtIn Remote-SSH (vsix + sha256)` |
-| 2 | `build/remote-ssh/*.vsix` (if committed) | `chore(build): add Remote-SSH vsix for prepackaged extension` |
-| 3 | `scripts/download-remote-ssh-vsix.sh` | `chore(scripts): add script to download and decompress Remote-SSH vsix` |
-| 4 | `build/hygiene.ts` | `chore(build): allow extensionsGallery in product.json (VYBE PATCH)` |
-| 5 | `src/vs/workbench/services/indexing/**` | `feat(indexing): add indexing stub service and contribution` |
-| 6 | `src/vs/workbench/contrib/vybeSettings/**`, `workbench.common.main.ts` (vybeSettings import) | `feat(vybeSettings): add Vybe Settings contrib (editor, tabs, dropdown, stubs)` |
-| 7 | `src/vs/workbench/contrib/vybeResources/**`, `workbench.common.main.ts` (vybeResources import) | `feat(vybeResources): add Resources contrib (modal, tabs: Blog, Docs, Changelog, Messages)` |
-| 8 | `src/vs/workbench/contrib/vybeDropdown/**`, `contrib/vybeTitlebar/**` | `feat(workbench): add vybeDropdown (shared panel) and vybeTitlebar contribs` |
-| 9 | `extensions/theme-vybe/**` | `feat(themes): add theme-vybe extension (Vybe Dark, Vybe Light)` |
-| 10 | All overlay files in "VYBE overlay files" table (workbench.contribution, activitybar, statusbar, compositeBar*, paneComposite*, panel, auxiliarybar) | `style(workbench): VYBE overlay — compact activity bar, tab style, statusbar, sidebar padding` |
-| 11 | `editor.contribution.ts`, `workbench.contribution.ts`, `titlebarPart.ts`, `titlebarpart.css` | `feat(titlebar): editor actions in title bar + divider + Vybe Settings/Account; hide Editor Actions Position; default to title bar` |
-| 12 | `editorGroupWatermark.ts`, `editorgroupview.css` | `feat(editor): Vybe empty state and workspace watermark; Connect via SSH opens Remote menu (VYBE PATCH)` |
-| 13 | `docs/**` | `docs: MERGE_UPSTREAM, Remote-SSH, theme comparison, editor watermark, vybe-settings references` |
 
 **One-liner for commit message body (optional):**  
 `See docs/MERGE_UPSTREAM.md for overlay index and re-apply checklist.`

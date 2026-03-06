@@ -528,8 +528,7 @@ export function defineComponentFixture(options: ComponentFixtureOptions): Themed
 		},
 	});
 
-	const labels = resolveLabels(options.labels);
-	return defineFixtureVariants(labels.length > 0 ? { labels } : {}, {
+	return defineFixtureVariants({
 		Dark: createFixture(darkTheme),
 		Light: createFixture(lightTheme),
 	});
@@ -550,11 +549,7 @@ export function defineThemedFixtureGroup(options: ThemedFixtureGroupOptions, fix
 export function defineThemedFixtureGroup(fixtures: ThemedFixtureGroupFixtures): ReturnType<typeof defineFixtureGroup>;
 export function defineThemedFixtureGroup(optionsOrFixtures: ThemedFixtureGroupOptions | ThemedFixtureGroupFixtures, fixtures?: ThemedFixtureGroupFixtures): ReturnType<typeof defineFixtureGroup> {
 	if (fixtures) {
-		const options = optionsOrFixtures as ThemedFixtureGroupOptions;
-		return defineFixtureGroup({
-			labels: resolveLabels(options.labels),
-			path: options.path,
-		}, fixtures as ThemedFixtureGroupFixtures);
+		return defineFixtureGroup(fixtures as ThemedFixtureGroupFixtures);
 	}
 	return defineFixtureGroup(optionsOrFixtures as ThemedFixtureGroupFixtures);
 }
