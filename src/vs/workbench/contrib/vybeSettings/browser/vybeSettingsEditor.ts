@@ -52,6 +52,8 @@ export class VybeSettingsEditor extends EditorPane {
 	private sidebarScrollable!: DomScrollableElement;
 	private sidebarContentEl!: HTMLElement;
 	private sidebarHeaderNameEl!: HTMLElement;
+	private sidebarAvatarInitialEl!: HTMLElement;
+	private sidebarCellEls: HTMLElement[] = [];
 	private tabContentEl!: HTMLElement;
 	private tabTitleEl!: HTMLElement;
 	private selectedTab: string = 'general';
@@ -157,9 +159,9 @@ export class VybeSettingsEditor extends EditorPane {
 			flex-shrink: 0;
 		`;
 
-		const avatarInitial = DOM.append(avatar, DOM.$('p.vybe-settings-sidebar-avatar-initial'));
-		avatarInitial.textContent = 'n';
-		avatarInitial.style.cssText = `
+		this.sidebarAvatarInitialEl = DOM.append(avatar, DOM.$('p.vybe-settings-sidebar-avatar-initial'));
+		this.sidebarAvatarInitialEl.textContent = 'n';
+		this.sidebarAvatarInitialEl.style.cssText = `
 			margin: 0;
 			font-size: 12px;
 			text-transform: uppercase;
@@ -278,6 +280,7 @@ export class VybeSettingsEditor extends EditorPane {
 					transition: background-color 0.2s ease;
 				`;
 				footerCell.dataset.tabId = item.id;
+				this.sidebarCellEls.push(footerCell);
 
 				this._register(addDisposableListener(footerCell, EventType.MOUSE_ENTER, () => {
 					if (this.selectedTab !== item.id) {
@@ -358,6 +361,7 @@ export class VybeSettingsEditor extends EditorPane {
 					transition: background-color 0.2s ease;
 				`;
 				cell.dataset.tabId = item.id;
+				this.sidebarCellEls.push(cell);
 
 				// Add hover effect
 				this._register(addDisposableListener(cell, EventType.MOUSE_ENTER, () => {
@@ -421,9 +425,8 @@ export class VybeSettingsEditor extends EditorPane {
 				this.sidebarHeaderNameEl.textContent = account.accountName;
 				this.sidebarHeaderNameEl.title = account.accountName;
 				const initial = account.accountName.trim().charAt(0).toUpperCase();
-				const avatarP = this.sidebarEl?.querySelector('.vybe-settings-sidebar-avatar-initial');
-				if (avatarP && initial) {
-					avatarP.textContent = initial;
+				if (this.sidebarAvatarInitialEl && initial) {
+					this.sidebarAvatarInitialEl.textContent = initial;
 				}
 			}
 		}).catch(() => { /* ignore */ });
@@ -502,8 +505,8 @@ export class VybeSettingsEditor extends EditorPane {
 		tabContent.style.cssText = `display: flex; flex-direction: column; gap: ${SETTINGS_TAB_CONTENT_GAP_PX}px;`;
 		this.tabContentEl = tabContent;
 
-		// Render General tab content
-		renderGeneralTab(tabContent, this.storageService, this.tabDisposables);
+		// Render initial tab (selectedTab may have been set from EditorInput.initialTabId in setInput)
+		this.selectTab(this.selectedTab);
 
 		// Create VS Code native scrollbar - wraps centering container so tab content is centered
 		this.contentScrollable = this._register(new DomScrollableElement(contentCenterWrap, {
@@ -565,12 +568,9 @@ export class VybeSettingsEditor extends EditorPane {
 		this.selectedTab = tabId;
 
 		// Update sidebar selection
-		const cells = this.sidebarEl.querySelectorAll('.vybe-settings-sidebar-cell[data-tab-id]');
-		cells.forEach(cell => {
-			if (DOM.isHTMLElement(cell)) {
-				cell.style.backgroundColor = cell.dataset.tabId === tabId ? 'var(--vscode-activityBar-background)' : 'transparent';
-			}
-		});
+		for (const cell of this.sidebarCellEls) {
+			cell.style.backgroundColor = cell.dataset.tabId === tabId ? 'var(--vscode-activityBar-background)' : 'transparent';
+		}
 
 		// Update tab title
 		if (this.tabTitleEl) {
@@ -666,6 +666,11 @@ export class VybeSettingsEditor extends EditorPane {
 
 	override async setInput(input: EditorInput, options: IEditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		await super.setInput(input, options, context, token);
+		// Open on a specific tab when requested (e.g. from "Add Models" in composer model dropdown)
+		const initialTabId = (input as { getInitialTabId?: () => string | undefined }).getInitialTabId?.();
+		if (initialTabId) {
+			this.selectedTab = initialTabId;
+		}
 	}
 
 	/** Returns the current rendered width of the sidebar (for debugging). */

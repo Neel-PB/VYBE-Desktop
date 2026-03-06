@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation.
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
@@ -23,6 +23,8 @@ registerSingleton(IIndexService, StubIndexService, InstantiationType.Delayed);
 
 const VYBE_SETTINGS_EDITOR_ID = VybeSettingsEditor.ID;
 const VYBE_SETTINGS_COMMAND_ID = 'vybe.openSettingsEditor';
+const VYBE_SETTINGS_MODELS_COMMAND_ID = 'vybe.openSettingsEditor.models';
+const VYBE_SETTINGS_INDEXING_DOCS_COMMAND_ID = 'vybe.openSettingsEditor.indexing-docs';
 const VYBE_MENUBAR_VYBE_MENU = new MenuId('MenubarVybeMenu');
 const VYBE_LOCAL_INDEX_E2E_COMMAND_ID = 'vybe.localIndexing.runE2ETest';
 const VYBE_LOCAL_INDEX_DEV_QUERY_COMMAND_ID = 'vybe.localIndexing.devQuerySimilarChunks';
@@ -57,12 +59,50 @@ registerAction2(class OpenVybeSettingsAction extends Action2 {
 	}
 });
 
+registerAction2(class OpenVybeSettingsModelsAction extends Action2 {
+	constructor() {
+		super({
+			id: VYBE_SETTINGS_MODELS_COMMAND_ID,
+			title: localize2('vybeSettings.openModels', 'VYBE: Open Settings (Models tab)')
+		});
+	}
+
+	async run(accessor: ServicesAccessor): Promise<void> {
+		const instantiationService = accessor.get(IInstantiationService);
+		const editorService = accessor.get(IEditorService);
+		const configurationService = accessor.get(IConfigurationService);
+		const input = instantiationService.createInstance(VybeSettingsEditorInput, 'models');
+		const useModal = configurationService.getValue<string>('workbench.editor.useModal');
+		const group = useModal !== 'off' ? MODAL_GROUP : undefined;
+		await editorService.openEditor(input, { pinned: true }, group);
+	}
+});
+
+registerAction2(class OpenVybeSettingsIndexingDocsAction extends Action2 {
+	constructor() {
+		super({
+			id: VYBE_SETTINGS_INDEXING_DOCS_COMMAND_ID,
+			title: localize2('vybeSettings.openIndexingDocs', 'VYBE: Open Settings (Indexing & Docs tab)')
+		});
+	}
+
+	async run(accessor: ServicesAccessor): Promise<void> {
+		const instantiationService = accessor.get(IInstantiationService);
+		const editorService = accessor.get(IEditorService);
+		const configurationService = accessor.get(IConfigurationService);
+		const input = instantiationService.createInstance(VybeSettingsEditorInput, 'indexing-docs');
+		const useModal = configurationService.getValue<string>('workbench.editor.useModal');
+		const group = useModal !== 'off' ? MODAL_GROUP : undefined;
+		await editorService.openEditor(input, { pinned: true }, group);
+	}
+});
+
 // Add to Preferences menu for discoverability (Command Palette + classic path)
 MenuRegistry.appendMenuItem(MenuId.MenubarPreferencesMenu, {
 	group: '4_vybe',
 	command: {
 		id: VYBE_SETTINGS_COMMAND_ID,
-		title: localize('vybeSettings.open', 'VYBE Settings')
+		title: localize('vybeSettings.open.preferences', 'VYBE Settings')
 	},
 	order: 100
 });
