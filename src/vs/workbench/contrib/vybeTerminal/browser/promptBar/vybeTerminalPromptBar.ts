@@ -84,7 +84,7 @@ export class VybeTerminalPromptBar extends Disposable {
 	private currentState: TerminalComposerState = 'idle';
 	private isExpanded: boolean = false;
 
-	private loadingAnimationInterval: ReturnType<typeof setInterval> | null = null;
+	private loadingAnimationInterval: number | null = null;
 	private modeDropdownDisposable: IDisposable | null = null;
 
 	constructor(

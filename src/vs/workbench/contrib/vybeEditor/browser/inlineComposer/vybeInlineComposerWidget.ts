@@ -106,7 +106,7 @@ export class VybeInlineComposerWidget extends Disposable {
 	private completionModeAtSend: InlineMode = 'ask';
 
 	private loadingDotsElement!: HTMLElement;
-	private loadingAnimationInterval: ReturnType<typeof setInterval> | null = null;
+	private loadingAnimationInterval: number | null = null;
 	private resizeObserver: ResizeObserver | null = null;
 	private resizeDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
 	private lastViewZoneHeight: number = VIEW_ZONE_HEIGHT_PX;
