@@ -444,6 +444,12 @@ import './contrib/opener/browser/opener.contribution.js';
 // VYBE Chat
 import './contrib/vybeChat/browser/contribution/vybeChat.contribution.js';
 
+// VYBE Editor (Inline Composer, etc.)
+import './contrib/vybeEditor/browser/vybeEditor.contribution.js';
+
+// VYBE Terminal (Prompt Bar, etc.)
+import './contrib/vybeTerminal/browser/vybeTerminal.contribution.js';
+
 // VYBE Settings
 import './contrib/vybeSettings/browser/vybeSettings.contribution.js';
 import './contrib/vybeResources/browser/vybeResources.contribution.js';
