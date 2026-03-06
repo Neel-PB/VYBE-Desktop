@@ -44,6 +44,12 @@ When `VYBE_USE_TITLEBAR_SETTINGS_BUTTON`, editor actions sit left of a vertical 
 | `src/vs/workbench/contrib/vybeResources/` | **VYBE (Resources):** Resources modal/menu (title "Resources"), tabs (Blog, Docs, Changelog, Messages), design tokens, editor input. Registered in workbench.common.main.ts. Keep entire folder on merge. |
 | `src/vs/workbench/contrib/vybeTitlebar/` | **VYBE (title bar):** `createVybeTitleBarSettingsAction`, `createVybeTitleBarAccountAction`, `getVybeLayoutControlEnabled`, `VYBE_USE_TITLEBAR_SETTINGS_BUTTON`; VybeAccountDropdown. Keep entire folder on merge. |
 | `src/vs/workbench/contrib/chat/browser/chatParticipant.contribution.ts` | **VYBE:** Native VS Code chat view/container registration disabled (block-commented). Vybe Chat replaces it. Search for `VYBE:` to re-apply after merge. Keep the `chatParticipantExtensionPoint` and contribution class active; only the view container + view descriptor registration is commented out. |
+| `src/vs/workbench/contrib/codeEditor/browser/emptyTextEditorHint/emptyTextEditorHint.ts` | **VYBE PATCH (merge-safe):** Simplified empty editor hint text ("Press ⌘K to generate code. Start typing to dismiss.") matching Cursor style. Search for `VYBE PATCH` / `emptyTextEditorHintWithInlineChat`. |
+| `src/vs/workbench/contrib/inlineChat/browser/inlineChat.contribution.ts` | **VYBE PATCH (merge-safe):** `StartSessionAction` (⌘I) disabled — replaced by `vybeInlineComposer.start`. Search for `VYBE PATCH` / `StartSessionAction`. |
+| `src/vs/workbench/contrib/terminal/terminal.all.ts` | **VYBE:** Three terminal contrib imports disabled: `chatAgentTools`, `chat`, and `inlineHint` — replaced by `vybeTerminal` prompt bar. Search for `VYBE:` comments. |
+| `src/vs/workbench/contrib/vybeInlineComposer/` | **VYBE (inline composer):** Lexical-based inline editor composer (replaces VS Code's Monaco-based inline chat input). Registered in `workbench.common.main.ts`. Keep entire folder on merge. |
+| `src/vs/workbench/contrib/vybeEditor/` | **VYBE (editor contrib):** Editor-scoped VYBE contributions (inline composer controller). Registered in `workbench.common.main.ts`. Keep entire folder on merge. |
+| `src/vs/workbench/contrib/vybeTerminal/` | **VYBE (terminal contrib):** Terminal prompt bar composer (hint bar + expanded composer with Lexical, Generate Command / Quick Question modes). Replaces VS Code terminal chat and initial hint. Registered in `workbench.common.main.ts`. Keep entire folder on merge. |
 
 ## Vendored Lexical editor
 
@@ -97,9 +103,9 @@ Reference: `docs/editor-watermark-no-repo-cursor-reference.md`. After merge, re-
 | File | Change |
 |------|--------|
 | `product.json` | `extensionsGallery` block (serviceUrl, itemUrl, controlUrl, recommendationsUrl) for VS Code marketplace. **Built-in Remote-SSH:** `builtInExtensions` includes `ms-vscode-remote.remote-ssh` with `vsix` and `sha256` pointing to `build/remote-ssh/ms-vscode-remote.remote-ssh-0.113.1.vsix`. Do not drop this entry or the `vsix`/`sha256` on merge. |
-| `src/vs/workbench/workbench.common.main.ts` | Import and register `./contrib/vybeChat/browser/contribution/vybeChat.contribution.js`, `./contrib/vybeSettings/browser/vybeSettings.contribution.js`, and `./contrib/vybeResources/browser/vybeResources.contribution.js`. |
+| `src/vs/workbench/workbench.common.main.ts` | Import and register `./contrib/vybeChat/browser/contribution/vybeChat.contribution.js`, `./contrib/vybeEditor/browser/vybeEditor.contribution.js`, `./contrib/vybeTerminal/browser/vybeTerminal.contribution.js`, `./contrib/vybeSettings/browser/vybeSettings.contribution.js`, and `./contrib/vybeResources/browser/vybeResources.contribution.js`. |
 
-After merge, re-add the VYBE Chat, VYBE Settings, and Vybe Resources imports if upstream adds new contributions; ensure product.json `extensionsGallery` and `builtInExtensions` (including Remote-SSH vsix) are not overwritten.
+After merge, re-add the VYBE Chat, VYBE Editor, VYBE Terminal, VYBE Settings, and Vybe Resources imports if upstream adds new contributions; ensure product.json `extensionsGallery` and `builtInExtensions` (including Remote-SSH vsix) are not overwritten.
 
 ## Remote-SSH prepackaging (built-in extension)
 
@@ -165,6 +171,9 @@ Use these to re-find VYBE blocks after resolving merge conflicts:
 | `editorGroupWatermark.ts` | `VYBE PATCH (merge-safe)` or `workbench.action.remote.showMenu` |
 | `build/hygiene.ts` | `VYBE PATCH (merge-safe)` or `extensionsGallery` |
 | `chatParticipant.contribution.ts` | `VYBE:` (block comment disabling native chat view) |
+| `inlineChat.contribution.ts` | `VYBE PATCH (merge-safe)` or `StartSessionAction` |
+| `terminal.all.ts` | `VYBE:` (disabled chatAgentTools, chat, inlineHint imports) |
+| `emptyTextEditorHint.ts` | `VYBE PATCH (merge-safe)` or `emptyTextEditorHintWithInlineChat` |
 | Other overlay (activitybar, statusbar, compositeBar*, etc.) | `VYBE:` |
 
 ## After merging upstream
@@ -178,9 +187,12 @@ Use these to re-find VYBE blocks after resolving merge conflicts:
    - **Editor empty state / Connect via SSH:** `editorGroupWatermark.ts` — search for `VYBE PATCH (merge-safe)` or `workbench.action.remote.showMenu`; ensure Connect via SSH runs Remote menu, not install-on-click.
    - **Product/build:** `product.json` — keep `extensionsGallery` and `builtInExtensions` (including Remote-SSH vsix entry). `build/hygiene.ts` — keep the `extensionsGallery` check commented out; search for `VYBE PATCH (merge-safe)`.
    - **Native chat disabled:** `chatParticipant.contribution.ts` — search for `VYBE:` and ensure the view container + view descriptor block remains commented out.
+   - **Inline chat disabled:** `inlineChat.contribution.ts` — search for `VYBE PATCH` and ensure `StartSessionAction` remains commented out.
+   - **Terminal chat/hint disabled:** `terminal.all.ts` — search for `VYBE:` and ensure `chatAgentTools`, `chat`, and `inlineHint` imports remain commented out.
+   - **Empty editor hint:** `emptyTextEditorHint.ts` — search for `VYBE PATCH` and ensure simplified hint text is preserved.
    - **Lexical vendor:** `src/vs/base/common/lexical/` and `build/scripts/bundle-lexical.sh` — ensure preserved. If Lexical version bumped in `package.json`, re-run `bundle-lexical.sh`.
 
-3. **New contribs:** Ensure `src/vs/workbench/contrib/vybeChat/`, `vybeResources/`, `vybeDropdown/`, `vybeTitlebar/` are still present and that `workbench.common.main.ts` still imports vybeChat, vybeSettings, and vybeResources.
+3. **New contribs:** Ensure `src/vs/workbench/contrib/vybeChat/`, `vybeEditor/`, `vybeTerminal/`, `vybeResources/`, `vybeDropdown/`, `vybeTitlebar/` are still present and that `workbench.common.main.ts` still imports vybeChat, vybeEditor, vybeTerminal, vybeSettings, and vybeResources.
 
 4. **Re-export patches** (optional): after resolving conflicts, regenerate patches so the next merge is clean.
 
