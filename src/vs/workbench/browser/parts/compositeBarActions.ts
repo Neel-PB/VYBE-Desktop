@@ -584,6 +584,48 @@ export class CompositeActionViewItem extends CompositeBarActionViewItem {
 		this.updateChecked();
 		this.updateEnabled();
 
+		// VYBE: Tag and customize VYBE Chat tabs
+		const compositeId = this.compositeBarActionItem.id;
+		if (compositeId && compositeId.startsWith('workbench.panel.vybeChat.')) {
+			container.setAttribute('data-vybe-chat', '');
+
+			// Close button (hidden by default, shown on hover via CSS)
+			const closeButton = append(container, $('div.codicon.codicon-close.remove-button'));
+			closeButton.style.position = 'absolute';
+			closeButton.style.right = '0px';
+			closeButton.style.top = '50%';
+			closeButton.style.transform = 'translateY(-50%)';
+			closeButton.style.cursor = 'pointer';
+			closeButton.style.zIndex = '2';
+			closeButton.style.opacity = '0';
+			closeButton.style.pointerEvents = 'none';
+			closeButton.style.width = '16.5px';
+			closeButton.style.height = '22px';
+			closeButton.style.borderTopLeftRadius = '0px';
+			closeButton.style.borderBottomLeftRadius = '0px';
+			closeButton.style.borderTopRightRadius = '4px';
+			closeButton.style.borderBottomRightRadius = '4px';
+			closeButton.style.display = 'flex';
+			closeButton.style.alignItems = 'center';
+			closeButton.style.justifyContent = 'center';
+
+			this._register(addDisposableListener(closeButton, EventType.CLICK, async (e) => {
+				EventHelper.stop(e, true);
+				const sessionId = compositeId.replace('workbench.panel.vybeChat.', '');
+				await this.commandService.executeCommand('vybeChat.closeChat', `workbench.panel.vybeChat.view.chat.${sessionId}`);
+			}));
+
+			this._register(addDisposableListener(container, EventType.MOUSE_ENTER, () => {
+				closeButton.style.opacity = '1';
+				closeButton.style.pointerEvents = 'auto';
+			}));
+
+			this._register(addDisposableListener(container, EventType.MOUSE_LEAVE, () => {
+				closeButton.style.opacity = '0';
+				closeButton.style.pointerEvents = 'none';
+			}));
+		}
+
 		this._register(addDisposableListener(this.container, EventType.CONTEXT_MENU, e => {
 			EventHelper.stop(e, true);
 

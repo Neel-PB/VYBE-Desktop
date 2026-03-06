@@ -362,6 +362,11 @@ export abstract class AbstractPaneCompositePart extends CompositePart<PaneCompos
 			));
 		}
 
+		// VYBE: Divider between title-actions and global-actions. Sibling of
+		// .global-actions for correct flex alignment; CSS :has() gate hides
+		// it when global-actions has no action items.
+		titleArea.appendChild($('div.vybe-title-divider'));
+
 		const globalTitleActionsContainer = titleArea.appendChild($('.global-actions'));
 
 		// Global Actions Toolbar

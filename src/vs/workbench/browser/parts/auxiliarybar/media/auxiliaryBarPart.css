@@ -105,3 +105,12 @@
 .monaco-workbench .auxiliarybar.pane-composite-part > .title.has-composite-bar > .title-actions .monaco-action-bar .action-item {
 	max-width: 150px;
 }
+
+/* VYBE: Hide global actions when a Vybe Chat tab is the active
+ * composite. Non-Vybe views dragged into the aux bar keep theirs. */
+.monaco-workbench .part.auxiliarybar > .title:has(.action-item[data-vybe-chat].checked) > .global-actions {
+	display: none !important;
+}
+.monaco-workbench .part.auxiliarybar > .title:has(.action-item[data-vybe-chat].checked) > .vybe-title-divider {
+	display: none !important;
+}

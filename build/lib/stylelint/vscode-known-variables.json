@@ -1028,7 +1028,12 @@
 		"--vscode-inline-chat-affordance-height",
 		"--collapse-from-width",
 		"--slide-from-x",
-		"--slide-from-y"
+		"--slide-from-y",
+		"--vybe-tab-height",
+		"--vybe-tab-label-font-size",
+		"--vybe-tab-label-height",
+		"--vybe-tab-label-line-height",
+		"--vybe-tab-label-max-width"
 	],
 	"sizes": [
 		"--vscode-bodyFontSize",

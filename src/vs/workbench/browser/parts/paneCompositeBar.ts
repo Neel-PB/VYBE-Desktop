@@ -76,6 +76,8 @@ export interface IPaneCompositeBarOptions {
 	readonly compact?: boolean;
 	/** VYBE: when true, use VYBE tab DOM and CSS for panel/auxiliary bar */
 	readonly useVybeTabStyle?: boolean;
+	/** VYBE: When true, tabs scroll horizontally instead of truncating into an overflow dropdown. */
+	readonly scrollable?: boolean;
 	readonly iconSize: number;
 	readonly recomputeSizes: boolean;
 	readonly orientation: ActionsOrientation;
@@ -140,6 +142,7 @@ export class PaneCompositeBar extends Disposable {
 			activityHoverOptions: this.options.activityHoverOptions,
 			preventLoopNavigation: this.options.preventLoopNavigation,
 			useVybeTabStyle: this.options.useVybeTabStyle,
+			scrollable: this.options.scrollable,
 			openComposite: async (compositeId, preserveFocus) => {
 				return (await this.paneCompositePart.openPaneComposite(compositeId, !preserveFocus)) ?? null;
 			},

@@ -101,7 +101,7 @@ export class AuxiliaryBarPart extends AbstractPaneCompositePart {
 			Parts.AUXILIARYBAR_PART,
 			{
 				hasTitle: true,
-				trailingSeparator: true,
+				trailingSeparator: false,
 				borderWidth: () => (this.getColor(SIDE_BAR_BORDER) || this.getColor(contrastBorder)) ? 1 : 0,
 			},
 			AuxiliaryBarPart.activeViewSettingsKey,
@@ -203,6 +203,7 @@ export class AuxiliaryBarPart extends AbstractPaneCompositePart {
 		return {
 			partContainerClass: 'auxiliarybar',
 			useVybeTabStyle: true, /* VYBE: VYBE tab style for secondary sidebar */
+			scrollable: true, /* VYBE: Horizontal scroll instead of overflow dropdown */
 			pinnedViewContainersKey: AuxiliaryBarPart.pinnedViewsKey,
 			placeholderViewContainersKey: AuxiliaryBarPart.placeholdeViewContainersKey,
 			viewContainersWorkspaceStateKey: AuxiliaryBarPart.viewContainersWorkspaceStateKey,

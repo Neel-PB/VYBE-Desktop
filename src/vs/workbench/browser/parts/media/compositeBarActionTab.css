@@ -17,6 +17,8 @@
 /* Base composite-bar-action-tab styling - override existing styles (panel + auxiliary bar) */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab {
 	position: relative !important;
@@ -60,6 +62,8 @@
 /* Status indicator */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .status-indicator,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .status-indicator,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .status-indicator,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .status-indicator,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .status-indicator,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .status-indicator {
 	/* Status indicator styling - can be customized later */
@@ -69,6 +73,8 @@
 /* Composite bar action tab label wrapper - max width */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label {
 	display: flex;
@@ -82,6 +88,8 @@
 /* Icon-only tabs (when hideLabel is true) - ensure icons are visible - APPLIES TO ALL LOCATIONS */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label:not(.codicon),
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label:not(.codicon),
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label:not(.codicon),
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label:not(.codicon),
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label:not(.codicon) {
 	/* Ensure URI icons with mask-image are visible */
 	width: 16px !important;
@@ -133,7 +141,9 @@
 
 /* Icon-only codicon tabs */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label.codicon,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label.codicon {
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label.codicon,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label.codicon,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon .action-label.codicon {
 	/* Ensure codicons are visible */
 	font-size: 16px !important;
 	display: flex !important;
@@ -144,6 +154,8 @@
 /* Ensure URI icons in checked/active state are also visible with proper size - APPLIES TO ALL LOCATIONS */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon.checked .action-label:not(.codicon),
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon.checked .action-label:not(.codicon),
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon.checked .action-label:not(.codicon),
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon.checked .action-label:not(.codicon),
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.icon.checked .action-label:not(.codicon) {
 	/* Active/checked icons should be brighter */
 	background-color: rgb(255, 255, 255) !important;
@@ -163,6 +175,8 @@
 /* Action label inside wrapper - 108px max; fade only when truncated (see .truncated below) */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label {
 	flex: 1 1 auto;
@@ -188,6 +202,8 @@
 /* Fade at end only when label is actually truncated (no ellipsis) */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label.truncated,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label.truncated,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label.truncated,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label.truncated,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label.truncated,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label.truncated {
 	-webkit-mask-image: linear-gradient(to right, black 0%, black calc(100% - 16px), transparent 100%);
@@ -233,39 +249,31 @@
 /* VYBE Light Theme - override for light theme */
 .monaco-workbench.vs .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
-.monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label {
+.monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs-light .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .composite-bar-action-tab-label .action-label {
 	color: rgb(49, 53, 58) !important;
 }
 
-/* Active/Checked state - solid background (no opacity) - panel + auxiliary bar */
+/* Active/Checked state - VS Code input background (panel + auxiliary bar) */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked {
-	/* VYBE Dark Theme: solid */
-	background-color: #222427 !important;
-}
-
-/* VYBE Light Theme - override background for light theme */
-.monaco-workbench.vs .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
-.monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
-.monaco-workbench.vs .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
-.monaco-workbench.vs .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
-.monaco-workbench.vs-light .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
-.monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
-.monaco-workbench.vs-light .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
-.monaco-workbench.vs-light .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked {
-	/* VYBE Light Theme: solid */
-	background-color: #eceff2 !important;
+	background-color: var(--vscode-input-background) !important;
 }
 
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label {
-	/* VYBE Dark Theme: rgb(209, 211, 219) */
-	/* VYBE Light Theme: rgb(49, 53, 58) */
 	color: rgb(209, 211, 219) !important;
 	border-bottom-color: rgb(209, 211, 219) !important;
 	border-bottom-style: none !important;
@@ -275,10 +283,14 @@
 /* VYBE Light Theme - override text color for checked state in light theme */
 .monaco-workbench.vs .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs-light .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label {
 	color: rgb(49, 53, 58) !important;
@@ -288,6 +300,8 @@
 /* Hover state */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label {
 	color: rgb(209, 211, 219) !important;
@@ -296,18 +310,26 @@
 /* VYBE Light Theme - override hover color for light theme */
 .monaco-workbench.vs .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs-light .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
+.monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label,
 .monaco-workbench.vs-light .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .composite-bar-action-tab-label .action-label {
 	color: rgb(49, 53, 58) !important;
 }
 
-/* Close button */
+/* Close button (panel + auxiliarybar) */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .codicon-close.remove-button,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .codicon-close.remove-button {
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .codicon-close.remove-button,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .codicon-close.remove-button,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .codicon-close.remove-button {
 	position: absolute;
 	right: 0px;
 	top: 50%;
@@ -319,46 +341,42 @@
 	transition: opacity 0.2s ease;
 }
 
-/* Show close button on hover */
+/* Show close button on hover (panel + auxiliarybar) */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button {
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button {
 	opacity: 1;
 	pointer-events: auto;
 }
 
-/* Close button background on hover - inactive tabs */
+/* Close button background on hover - inactive tabs (panel + auxiliarybar) */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button {
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button {
 	background-color: var(--vscode-sideBar-background, rgba(51, 51, 51, 0.4)) !important;
 }
 
-/* VYBE Light Theme - inactive tabs close button background */
-.monaco-workbench.vs .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench.vs-light .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button {
-	background-color: var(--vscode-sideBar-background, rgba(255, 255, 255, 0.4)) !important;
-}
-
-/* Close button background on hover - active/checked tabs (solid, same as tab) */
+/* Close button background on hover - active/checked tabs (panel + auxiliarybar) */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button {
-	/* VYBE Dark Theme: solid */
-	background-color: #222427 !important;
-}
-
-/* VYBE Light Theme - active/checked tabs close button background (solid) */
-.monaco-workbench.vs .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench.vs .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench.vs-light .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench.vs-light .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button {
-	/* VYBE Light Theme: solid */
-	background-color: #eceff2 !important;
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button {
+	background-color: var(--vscode-input-background) !important;
 }
 
 /* Badge positioning for composite-bar-action-tab */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .badge,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .badge,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .badge,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .badge,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .badge,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .badge {
 	margin-left: 4px;
@@ -367,14 +385,18 @@
 /* Active item indicator - hide default border, we use background box instead */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .active-item-indicator,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .active-item-indicator,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .active-item-indicator,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .active-item-indicator,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .active-item-indicator,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .active-item-indicator {
-	display: none !important; /* Hide default indicator, we use background box */
+	display: none !important;
 }
 
 /* Truncated state */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.is-truncated,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.is-truncated,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.is-truncated,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.is-truncated,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.is-truncated,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.is-truncated {
 	overflow: hidden;
@@ -384,6 +406,8 @@
 /* Drag preview styling - ensure drag preview matches the new size */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab[draggable="true"],
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab[draggable="true"],
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab[draggable="true"],
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab[draggable="true"],
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab[draggable="true"],
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab[draggable="true"] {
 	-webkit-user-drag: element !important;
@@ -392,6 +416,8 @@
 /* Ensure drag preview maintains size during drag */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:active,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:active,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:active,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:active,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:active,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:active {
 	/* Maintain size during drag */
@@ -401,68 +427,70 @@
 	margin: 2px !important;
 }
 
-/* VYBE: Horizontal scrolling for composite bar tabs in auxiliary bar */
+/* VYBE: Horizontal scrolling for composite bar tabs (shared panel + auxiliary bar).
+ * No DomScrollableElement — pure CSS scrolling with hidden native scrollbars. */
+.monaco-workbench .part.panel > .title > .composite-bar-container,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container {
 	display: flex !important;
-	overflow: hidden !important; /* Prevent container from expanding */
-}
-
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .monaco-scrollable-element {
-	flex: 1 1 0% !important; /* Take available space but can shrink */
 	overflow: hidden !important;
-	display: flex !important;
-	align-items: center !important; /* Vertically center the scrollable content */
-	height: 100% !important;
-	min-width: 0 !important; /* Critical: Allow flex item to shrink below content size */
-	max-width: 100% !important; /* Prevent expansion beyond container */
-	width: 0 !important; /* Force it to use flex-basis instead of content width */
 }
 
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable {
+.monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar-scrollable,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar-scrollable,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar-scrollable {
 	display: flex !important;
-	align-items: center; /* Vertically center tabs */
-	overflow-x: scroll !important; /* Enable horizontal scrolling */
+	align-items: center;
+	overflow-x: auto !important;
 	overflow-y: hidden !important;
-	width: 100% !important;
+	flex: 1 1 0% !important;
+	min-width: 0 !important;
 	height: 100% !important;
-	scrollbar-width: none !important; /* Hide Firefox scrollbar */
-	flex-shrink: 1 !important; /* Allow shrinking */
+	scrollbar-width: none !important; /* Firefox */
 }
 
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable::-webkit-scrollbar {
-	display: none !important; /* Hide Chrome/Safari scrollbar */
+.monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar-scrollable::-webkit-scrollbar,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar-scrollable::-webkit-scrollbar,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar-scrollable::-webkit-scrollbar {
+	display: none !important; /* Chromium/Electron */
 }
 
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar {
-	display: flex !important; /* Use flex, not inline-flex */
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable > .composite-bar,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable > .composite-bar,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable > .composite-bar {
+	display: flex !important;
 	flex-direction: row !important;
-	align-items: center !important; /* Vertically center tabs */
+	align-items: center !important;
 	white-space: nowrap !important;
 	height: 100% !important;
-	width: auto !important; /* Natural width based on content */
-	flex-shrink: 0 !important; /* Prevent the bar itself from shrinking */
+	width: auto !important;
+	flex-shrink: 0 !important;
 }
 
-/* Ensure action bar maintains proper height and alignment */
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar {
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable > .composite-bar > .monaco-action-bar,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable > .composite-bar > .monaco-action-bar,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable > .composite-bar > .monaco-action-bar {
 	display: flex;
 	align-items: center;
 	height: 100%;
-	line-height: 27px; /* Maintain original line-height */
+	line-height: 27px;
 }
 
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar > .actions-container {
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable > .composite-bar > .monaco-action-bar > .actions-container,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable > .composite-bar > .monaco-action-bar > .actions-container,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable > .composite-bar > .monaco-action-bar > .actions-container {
 	display: flex;
 	align-items: center;
 	height: 100%;
 }
 
-/* Auxiliary bar scrollable: same VYBE tab style (no old uppercase/underline look) */
+/* Scrollable tabs: same VYBE tab style -- no grow/shrink, size to content */
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab {
 	text-transform: none !important;
 	font-size: var(--vybe-tab-label-font-size) !important;
 	line-height: var(--vybe-tab-label-line-height) !important;
-	/* Layout: no grow/shrink so tabs size to content */
 	flex-grow: 0 !important;
 	flex-shrink: 0 !important;
 	flex-basis: auto !important;
@@ -472,30 +500,15 @@
 }
 
 /* Remove hover background from action-label inside scrollable tabs */
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .action-label,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .action-label,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:focus .action-label,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .action-label,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .action-label,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:focus .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .action-label,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:focus .action-label {
 	background: none !important;
-}
-
-/* Thin horizontal scrollbar - invisible by default, visible on hover */
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .monaco-scrollable-element .scrollbar.horizontal {
-	height: 3px !important;
-	bottom: 0px !important;
-	opacity: 0;
-	transition: opacity 0.3s;
-}
-
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .monaco-scrollable-element:hover .scrollbar.horizontal,
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .monaco-scrollable-element .scrollbar.horizontal.active {
-	opacity: 1;
-}
-
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .monaco-scrollable-element .scrollbar.horizontal .slider {
-	background: rgba(121, 121, 121, 0.4) !important;
-}
-
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .monaco-scrollable-element:hover .scrollbar.horizontal .slider {
-	background: rgba(121, 121, 121, 0.7) !important;
 }
 

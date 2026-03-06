@@ -145,6 +145,8 @@ export interface ICompositeBarOptions {
 	readonly compact?: boolean;
 	/** VYBE: VYBE tab DOM/CSS for panel and auxiliary bar */
 	readonly useVybeTabStyle?: boolean;
+	/** VYBE: When true, all tabs stay in the DOM and the bar scrolls horizontally instead of truncating into an overflow dropdown. */
+	readonly scrollable?: boolean;
 	readonly compositeSize: number;
 	readonly overflowActionSize: number;
 	readonly dndHandler: ICompositeDragAndDrop;
@@ -285,8 +287,19 @@ export class CompositeBar extends Widget implements ICompositeBar {
 		return this.model.visibleItems;
 	}
 
+	private scrollableContainer: HTMLElement | undefined;
+
 	create(parent: HTMLElement): HTMLElement {
-		const actionBarDiv = parent.appendChild($('.composite-bar'));
+		let actionBarParent: HTMLElement;
+
+		if (this.options.scrollable) {
+			this.scrollableContainer = parent.appendChild($('.composite-bar-scrollable'));
+			actionBarParent = this.scrollableContainer.appendChild($('.composite-bar'));
+		} else {
+			actionBarParent = parent.appendChild($('.composite-bar'));
+		}
+
+		const actionBarDiv = actionBarParent;
 		this.compositeSwitcherBar = this._register(new ActionBar(actionBarDiv, {
 			actionViewItemProvider: (action, options) => {
 				if (action instanceof CompositeOverflowActivityAction) {
@@ -526,6 +539,12 @@ export class CompositeBar extends Widget implements ICompositeBar {
 			return; // We have not been rendered yet so there is nothing to update.
 		}
 
+		// VYBE: Scrollable mode -- show all composites, no truncation/overflow
+		if (this.options.scrollable) {
+			this.updateCompositeSwitcherScrollable(compositeSwitcherBar, donotTrigger);
+			return;
+		}
+
 		let compositesToShow = this.model.visibleItems.filter(item =>
 			item.pinned
 			|| (this.model.activeItem && this.model.activeItem.id === item.id) /* Show the active composite even if it is not pinned */
@@ -635,6 +654,52 @@ export class CompositeBar extends Widget implements ICompositeBar {
 
 			compositeSwitcherBar.push(this.compositeOverflowAction.value, { label: false, icon: true });
 		}
+
+		if (!donotTrigger) {
+			this._onDidChange.fire();
+		}
+	}
+
+	/**
+	 * VYBE: Scrollable variant -- all composites stay in the DOM, no overflow menu.
+	 */
+	private updateCompositeSwitcherScrollable(compositeSwitcherBar: ActionBar, donotTrigger?: boolean): void {
+		const compositesToShow = this.model.visibleItems.filter(item =>
+			item.pinned
+			|| (this.model.activeItem && this.model.activeItem.id === item.id)
+		).map(item => item.id);
+
+		// Remove overflow action if it exists (switching from non-scrollable)
+		if (this.compositeOverflowAction.value) {
+			compositeSwitcherBar.pull(compositeSwitcherBar.length() - 1);
+			this.compositeOverflowAction.value = undefined;
+			this.compositeOverflowActionViewItem.value = undefined;
+		}
+
+		// Pull out composites that are no longer visible
+		const compositesToRemove: number[] = [];
+		this.visibleComposites.forEach((compositeId, index) => {
+			if (!compositesToShow.includes(compositeId)) {
+				compositesToRemove.push(index);
+			}
+		});
+		compositesToRemove.reverse().forEach(index => {
+			compositeSwitcherBar.pull(index);
+			this.visibleComposites.splice(index, 1);
+		});
+
+		// Sync positions
+		compositesToShow.forEach((compositeId, newIndex) => {
+			const currentIndex = this.visibleComposites.indexOf(compositeId);
+			if (newIndex !== currentIndex) {
+				if (currentIndex !== -1) {
+					compositeSwitcherBar.pull(currentIndex);
+					this.visibleComposites.splice(currentIndex, 1);
+				}
+				compositeSwitcherBar.push(this.model.findItem(compositeId).activityAction, { label: true, icon: this.options.icon, index: newIndex });
+				this.visibleComposites.splice(newIndex, 0, compositeId);
+			}
+		});
 
 		if (!donotTrigger) {
 			this._onDidChange.fire();

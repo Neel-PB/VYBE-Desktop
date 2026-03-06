@@ -85,7 +85,7 @@ export class PanelPart extends AbstractPaneCompositePart {
 	) {
 		super(
 			Parts.PANEL_PART,
-			{ hasTitle: true, trailingSeparator: true },
+			{ hasTitle: true, trailingSeparator: false },
 			PanelPart.activePanelSettingsKey,
 			ActivePanelContext.bindTo(contextKeyService),
 			PanelFocusContext.bindTo(contextKeyService),
@@ -137,6 +137,7 @@ export class PanelPart extends AbstractPaneCompositePart {
 		return {
 			partContainerClass: 'panel',
 			useVybeTabStyle: true, /* VYBE: VYBE tab style for panel */
+			scrollable: true, /* VYBE: Horizontal scroll instead of overflow dropdown */
 			pinnedViewContainersKey: 'workbench.panel.pinnedPanels',
 			placeholderViewContainersKey: 'workbench.panel.placeholderPanels',
 			viewContainersWorkspaceStateKey: 'workbench.panel.viewContainersWorkspaceState',
