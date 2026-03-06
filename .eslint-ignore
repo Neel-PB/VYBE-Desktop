@@ -28,6 +28,7 @@
 **/out/**
 **/out-*/**
 **/src/**/dompurify.js
+**/src/**/lexical.js
 **/src/**/marked.js
 **/src/**/semver.js
 **/src/typings/**/*.d.ts

@@ -64,6 +64,7 @@ export const unicodeFilter = Object.freeze<string[]>([
 	'!extensions/terminal-suggest/src/shell/fishBuiltinsCache.ts',
 
 	'!src/vs/base/browser/dompurify/**',
+	'!src/vs/base/common/lexical/lexical.js',
 	'!src/vs/workbench/services/keybinding/browser/keyboardLayouts/**',
 	'!src/vs/workbench/contrib/terminal/common/scripts/psreadline/**',
 ]);
@@ -79,6 +80,7 @@ export const indentationFilter = Object.freeze<string[]>([
 	'!**/LICENSE',
 	'!**/*.mp3',
 	'!src/vs/base/browser/dompurify/*',
+	'!src/vs/base/common/lexical/lexical.js',
 	'!src/vs/base/common/marked/marked.js',
 	'!src/vs/base/common/semver/semver.js',
 	'!src/vs/base/node/terminateProcess.sh',
@@ -192,6 +194,7 @@ export const copyrightFilter = Object.freeze<string[]>([
 	'!extensions/terminal-suggest/src/completions/upstream/**',
 	'!extensions/typescript-language-features/node-maintainer/**',
 	'!extensions/html-language-features/server/src/modes/typescript/*',
+	'!src/vs/base/common/lexical/lexical.js',
 	'!extensions/*/server/bin/*',
 	'!src/vs/workbench/contrib/terminal/common/scripts/psreadline/**',
 ]);
