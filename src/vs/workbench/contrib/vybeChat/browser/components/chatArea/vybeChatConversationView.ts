@@ -57,10 +57,13 @@ export class VybeChatConversationView extends Disposable {
 
 	private scrollNewPairIntoView(humanEl: HTMLElement, previousPair: HTMLElement | null): void {
 		const win = getWindow(this.domNode);
+		const container = this.domNode;
 		win.requestAnimationFrame(() => {
-			humanEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			const pair = humanEl.parentElement;
+			if (pair) {
+				container.scrollTo({ top: pair.offsetTop, behavior: 'smooth' });
+			}
 
-			// Strip previous pair's sizing after the scroll animation settles
 			if (previousPair) {
 				setTimeout(() => {
 					previousPair.style.minHeight = '';

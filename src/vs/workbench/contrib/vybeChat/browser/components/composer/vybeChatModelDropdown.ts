@@ -64,7 +64,7 @@ const T = {
 
 // --- Placeholder models -----------------------------------------------------
 
-interface PlaceholderModel {
+export interface PlaceholderModel {
 	id: string;
 	label: string;
 }
@@ -111,9 +111,18 @@ export function showModelDropdown(
 		onStateChange: (state: ModelDropdownResult) => void;
 		onClose?: () => void;
 		onAddModels?: () => void;
+		/** Custom model list (if not provided, uses PLACEHOLDER_MODELS) */
+		customModels?: PlaceholderModel[];
+		/** Hide Max Mode toggle (default: false) */
+		hideMaxMode?: boolean;
+		/** Hide Add Models row (default: false) */
+		hideAddModels?: boolean;
+		/** Hide search input (default: false) */
+		hideSearch?: boolean;
 	},
 ): IDisposable {
-	const { openDownward = false, onStateChange, onClose, onAddModels } = options;
+	const { openDownward = false, onStateChange, onClose, onAddModels, customModels, hideMaxMode = false, hideAddModels = false, hideSearch = false } = options;
+	const modelList = customModels ?? PLACEHOLDER_MODELS;
 	let colors = getVybeDropdownThemeColors(themeService);
 	const win = getWindow(anchor);
 	const body = win.document.body;
@@ -178,30 +187,33 @@ export function showModelDropdown(
 	}
 	applyPanelTheme(colors);
 
-	// -- Search input -------------------------------------------------
-	const searchContainer = append(panel, $('div'));
-	searchContainer.style.cssText = `
-		display: flex; gap: 4px; align-items: center;
-		padding: 0 ${T.searchPaddingH}px;
-		border: none; box-sizing: border-box; outline: none;
-		margin: ${T.searchMargin}px;
-	`;
-	const searchInput = win.document.createElement('input') as HTMLInputElement;
-	searchInput.placeholder = 'Search models';
-	searchInput.style.cssText = `
-		font-size: ${T.searchFontSize}px; line-height: ${T.searchLineHeight}px;
-		border-radius: 3px; background: transparent;
-		color: ${colors.panelFg};
-		padding: ${T.searchPaddingV}px 0; flex: 1; min-width: 0;
-		border: none; outline: none; box-sizing: border-box;
-		font-family: -apple-system, "system-ui", sans-serif;
-	`;
-	searchContainer.appendChild(searchInput);
+	// -- Search input (hidden if hideSearch is true) -----------------
+	let searchInput: HTMLInputElement | null = null;
+	if (!hideSearch) {
+		const searchContainer = append(panel, $('div'));
+		searchContainer.style.cssText = `
+			display: flex; gap: 4px; align-items: center;
+			padding: 0 ${T.searchPaddingH}px;
+			border: none; box-sizing: border-box; outline: none;
+			margin: ${T.searchMargin}px;
+		`;
+		searchInput = win.document.createElement('input') as HTMLInputElement;
+		searchInput.placeholder = 'Search models';
+		searchInput.style.cssText = `
+			font-size: ${T.searchFontSize}px; line-height: ${T.searchLineHeight}px;
+			border-radius: 3px; background: transparent;
+			color: ${colors.panelFg};
+			padding: ${T.searchPaddingV}px 0; flex: 1; min-width: 0;
+			border: none; outline: none; box-sizing: border-box;
+			font-family: -apple-system, "system-ui", sans-serif;
+		`;
+		searchContainer.appendChild(searchInput);
 
-	// Placeholder color matching composer input
-	const placeholderStyle = win.document.createElement('style');
-	placeholderStyle.textContent = `.vybe-model-dropdown-panel input::placeholder { color: var(--vscode-input-placeholderForeground); opacity: 0.5; }`;
-	panel.appendChild(placeholderStyle);
+		// Placeholder color matching composer input
+		const placeholderStyle = win.document.createElement('style');
+		placeholderStyle.textContent = `.vybe-model-dropdown-panel input::placeholder { color: var(--vscode-input-placeholderForeground); opacity: 0.5; }`;
+		panel.appendChild(placeholderStyle);
+	}
 
 	// -- Content area -------------------------------------------------
 	const contentArea = append(panel, $('div'));
@@ -246,7 +258,7 @@ export function showModelDropdown(
 			);
 			focusables.push(autoRow);
 
-			if (!state.isAutoEnabled) {
+			if (!state.isAutoEnabled && !hideMaxMode) {
 				const maxRow = buildToggleRow(toggleSection, 'MAX Mode', state.isMaxModeEnabled, null, (on) => {
 					state.isMaxModeEnabled = on;
 					onStateChange({ ...state });
@@ -285,15 +297,16 @@ export function showModelDropdown(
 			});
 		}
 
-		// Divider before Add Models
-		appendDivider(scrollContent);
+		// Divider before Add Models (hidden if hideAddModels is true)
+		if (!hideAddModels) {
+			appendDivider(scrollContent);
+			const addRow = buildAddModelsRow(scrollContent);
+			focusables.push(addRow);
 
-		const addRow = buildAddModelsRow(scrollContent);
-		focusables.push(addRow);
-
-		// Bottom spacer so Add Models isn't flush against the panel edge
-		const spacer = append(scrollContent, $('div'));
-		spacer.style.cssText = `height: ${T.contentGap}px; flex-shrink: 0;`;
+			// Bottom spacer so Add Models isn't flush against the panel edge
+			const spacer = append(scrollContent, $('div'));
+			spacer.style.cssText = `height: ${T.contentGap}px; flex-shrink: 0;`;
+		}
 
 		scrollable = new DomScrollableElement(scrollContent, {
 			vertical: ScrollbarVisibility.Auto,
@@ -346,9 +359,9 @@ export function showModelDropdown(
 	}
 
 	function filterModels(query: string): PlaceholderModel[] {
-		if (!query) { return PLACEHOLDER_MODELS; }
+		if (!query) { return modelList; }
 		const q = query.toLowerCase();
-		return PLACEHOLDER_MODELS.filter(m => m.label.toLowerCase().includes(q));
+		return modelList.filter(m => m.label.toLowerCase().includes(q));
 	}
 
 	// -- Helpers ------------------------------------------------------
@@ -568,10 +581,12 @@ export function showModelDropdown(
 	}));
 
 	// -- Search input listener ----------------------------------------
-	store.add(addDisposableListener(searchInput, 'input', () => {
-		searchQuery = searchInput.value;
-		renderContent();
-	}));
+	if (searchInput) {
+		store.add(addDisposableListener(searchInput, 'input', () => {
+			searchQuery = searchInput!.value;
+			renderContent();
+		}));
+	}
 
 	// -- Initial render -----------------------------------------------
 	renderContent();
@@ -581,7 +596,7 @@ export function showModelDropdown(
 		if (closed) { return; }
 		colors = getVybeDropdownThemeColors(themeService);
 		applyPanelTheme(colors);
-		searchInput.style.color = colors.panelFg;
+		if (searchInput) { searchInput.style.color = colors.panelFg; }
 		renderContent();
 	}));
 
@@ -671,7 +686,13 @@ export function showModelDropdown(
 		onClose?.();
 	}
 
-	setTimeout(() => searchInput.focus(), 0);
+	setTimeout(() => {
+		if (searchInput) {
+			searchInput.focus();
+		} else {
+			panel.focus();
+		}
+	}, 0);
 
 	return { dispose: () => close() };
 }

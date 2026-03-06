@@ -55,6 +55,7 @@ export interface ComposerDropdownItem {
 	icon?: string;
 	keybinding?: string;
 	isSelected: boolean;
+	dividerBefore?: boolean;
 }
 
 export interface ComposerDropdownOptions {
@@ -295,6 +296,15 @@ function buildItem(
 	store: DisposableStore,
 	onSelect: (id: string) => void,
 ): HTMLElement {
+	if (item.dividerBefore) {
+		const divider = append(container, $('div.vybe-composer-dropdown-divider'));
+		divider.style.cssText = `
+			height: 1px;
+			margin: 2px 0;
+			background-color: ${colors.separator};
+		`;
+	}
+
 	const row = append(container, $('div.vybe-composer-dropdown-item'));
 	row.style.cssText = `
 		display: flex;
