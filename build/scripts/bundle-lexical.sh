@@ -26,6 +26,7 @@ cat <<'ENTRY' | npx esbuild \
 export * from "lexical";
 export { registerPlainText } from "@lexical/plain-text";
 export { registerHistory, createEmptyHistoryState } from "@lexical/history";
+export { $getHtmlContent, $getClipboardDataFromSelection, $insertDataTransferForPlainText, $insertDataTransferForRichText, setLexicalClipboardDataTransfer } from "@lexical/clipboard";
 export { isMimeType, mediaFileReader, $dfs, $reverseDfs, $dfsIterator, $reverseDfsIterator, $getNearestNodeOfType, $getNearestBlockElementAncestorOrThrow, registerNestedElementResolver, $restoreEditorState, $insertNodeToNearestRoot, $wrapNodeInElement, objectKlassEquals, $filter, $handleIndentAndOutdent, $insertFirst, calculateZoomLevel, $isEditorIsNestedEditor, $unwrapAndFilterDescendants, $descendantsMatching, $firstToLastIterator, $lastToFirstIterator, $unwrapNode, makeStateWrapper, $getNextSiblingOrParentSibling, $getDepth, $getNextRightPreorderNode, $insertNodeToNearestRootAtCaret, $getAdjacentCaret, CAN_USE_BEFORE_INPUT, CAN_USE_DOM, IS_ANDROID, IS_ANDROID_CHROME, IS_APPLE, IS_APPLE_WEBKIT, IS_CHROME, IS_FIREFOX, IS_IOS, IS_SAFARI, markSelection, positionNodeOnRange, selectionAlwaysOnDisplay } from "@lexical/utils";
 ENTRY
 

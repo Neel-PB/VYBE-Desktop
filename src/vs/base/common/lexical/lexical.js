@@ -1,6 +1,6 @@
 /**
  * Vendored Lexical bundle for VS Code browser context.
- * Packages: lexical, @lexical/plain-text, @lexical/history, @lexical/clipboard, @lexical/utils
+ * Packages: lexical, @lexical/plain-text, @lexical/history, @lexical/utils
  * Generated via: bash build/scripts/bundle-lexical.sh
  * DO NOT EDIT - regenerate with the script above.
  */
@@ -16215,6 +16215,7 @@ export {
   $getChildCaret2 as $getChildCaret,
   $getChildCaretAtIndex2 as $getChildCaretAtIndex,
   $getChildCaretOrSelf2 as $getChildCaretOrSelf,
+  $getClipboardDataFromSelection2 as $getClipboardDataFromSelection,
   $getCollapsedCaretRange2 as $getCollapsedCaretRange,
   $getCommonAncestor2 as $getCommonAncestor,
   $getCommonAncestorResultBranchOrder2 as $getCommonAncestorResultBranchOrder,
