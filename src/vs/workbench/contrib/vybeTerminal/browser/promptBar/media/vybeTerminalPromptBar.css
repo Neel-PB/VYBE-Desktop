@@ -1,0 +1,300 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* VYBE: Terminal prompt bar — persistent hint bar at terminal bottom that expands
+ * into a composer on ⌘I. Uses flex layout to avoid xterm resize flicker. */
+
+/* --- Flex container on terminal-wrapper when prompt bar is present ---
+ *
+ * The default terminal-wrapper uses `display: block; height: 100%` with
+ * the xterm absolutely positioned inside. We switch to flex-column so the
+ * prompt bar is a natural sibling that doesn't overlay.
+ *
+ * We must also override the xterm `position: absolute` back to static
+ * and let the terminal-xterm-host fill remaining space via flex.
+ */
+
+.terminal-wrapper.vybe-terminal-has-prompt-bar {
+	display: flex !important;
+	flex-direction: column !important;
+}
+
+.terminal-wrapper.vybe-terminal-has-prompt-bar > .terminal-xterm-host {
+	flex: 1 1 0% !important;
+	min-height: 0 !important;
+	height: auto !important;
+	position: relative !important;
+}
+
+.terminal-wrapper.vybe-terminal-has-prompt-bar > .terminal-xterm-host > .terminal.xterm {
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+}
+
+/* --- Prompt bar container --- */
+
+.vybe-terminal-prompt-bar {
+	flex-shrink: 0;
+	width: 100%;
+	z-index: 10000;
+	box-sizing: border-box;
+	padding: 0 8px;
+}
+
+.vybe-terminal-prompt-bar-inner {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+	border-radius: 8px;
+	background-color: var(--vscode-editor-background);
+	box-sizing: border-box;
+	margin-bottom: 4px;
+	margin-top: 4px;
+}
+
+/* --- Input row --- */
+
+.vybe-terminal-prompt-bar-input-row {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding: 4px 8px 0;
+	box-sizing: border-box;
+}
+
+.vybe-terminal-prompt-bar-input {
+	flex: 1 1 0%;
+	position: relative;
+	overflow: hidden;
+	cursor: text;
+}
+
+/* --- Lexical editor --- */
+
+.vybe-terminal-prompt-bar-editor {
+	resize: none;
+	overflow: hidden;
+	line-height: 1.5;
+	font-family: inherit;
+	font-size: 13px;
+	color: var(--vscode-input-foreground);
+	background-color: transparent;
+	display: block;
+	outline: none;
+	scrollbar-width: none;
+	box-sizing: border-box;
+	border: none;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	padding: 0;
+	user-select: text;
+	white-space: pre-wrap;
+	min-height: 20px;
+	cursor: text;
+}
+
+.vybe-terminal-prompt-bar-editor:focus,
+.vybe-terminal-prompt-bar-editor:focus-visible {
+	outline: none !important;
+	outline-width: 0 !important;
+	box-shadow: none !important;
+}
+
+.vybe-terminal-prompt-bar-paragraph {
+	margin: 0;
+	line-height: 1.5;
+}
+
+/* --- Placeholder --- */
+
+.vybe-terminal-prompt-bar-placeholder {
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 0;
+	pointer-events: none;
+	user-select: none;
+	line-height: 1.5;
+	font-size: 13px;
+	color: var(--vscode-input-placeholderForeground);
+	opacity: 0.5;
+}
+
+/* --- Close button --- */
+
+.vybe-terminal-prompt-bar-close {
+	align-self: start;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: var(--vscode-foreground);
+	padding: 2px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	opacity: 0.5;
+	margin-right: 2px;
+}
+
+.vybe-terminal-prompt-bar-close:hover {
+	opacity: 1;
+}
+
+.vybe-terminal-prompt-bar-close .codicon {
+	font-size: 14px !important;
+	width: 14px;
+	height: 14px;
+	line-height: 14px;
+}
+
+/* --- Actions row --- */
+
+.vybe-terminal-prompt-bar-actions-row {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 2px 4px 4px;
+	gap: 2px;
+}
+
+.vybe-terminal-prompt-bar-actions-spacer {
+	flex-grow: 1;
+}
+
+/* --- Mode pill --- */
+
+.vybe-terminal-prompt-bar-mode-pill {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	font-size: 10px;
+	line-height: 12px;
+	min-width: 0;
+	padding: 2px 4px;
+	border-radius: 4px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	white-space: nowrap;
+	box-sizing: border-box;
+	margin-right: 4px;
+}
+
+.vybe-terminal-prompt-bar-mode-pill > span:first-child {
+	opacity: 0.6;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: var(--vscode-foreground);
+}
+
+.vybe-terminal-prompt-bar-mode-pill .codicon {
+	font-size: 10px !important;
+	flex-shrink: 0;
+	opacity: 0.6;
+	color: var(--vscode-foreground);
+}
+
+.vybe-terminal-prompt-bar-mode-pill:hover > span:first-child,
+.vybe-terminal-prompt-bar-mode-pill:hover .codicon {
+	opacity: 1;
+}
+
+/* --- Send button --- */
+
+.vybe-terminal-prompt-bar-send {
+	flex-shrink: 0;
+	flex-grow: 0;
+	width: 20px;
+	height: 20px;
+	min-width: 20px;
+	max-width: 20px;
+	min-height: 20px;
+	max-height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	border: none;
+	background-color: var(--vscode-button-background);
+	cursor: pointer;
+	position: relative;
+}
+
+.vybe-terminal-prompt-bar-send .codicon {
+	font-size: 16px !important;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	color: var(--vscode-button-foreground, #ffffff);
+	display: block;
+	text-align: center;
+}
+
+.vybe-terminal-prompt-bar-send .codicon-arrow-up {
+	transform: translateX(-0.5px);
+}
+
+/* --- Loading indicator --- */
+
+.vybe-terminal-prompt-bar-loading {
+	display: flex;
+	align-items: center;
+	gap: 0;
+	font-size: 12px;
+	line-height: 1.4;
+	color: var(--vscode-foreground);
+	opacity: 0.7;
+}
+
+.vybe-terminal-prompt-bar-loading-text {
+	color: var(--vscode-foreground);
+}
+
+.vybe-terminal-prompt-bar-loading-dots {
+	color: var(--vscode-foreground);
+	min-width: 12px;
+}
+
+/* --- Response row (between input and actions) --- */
+
+.vybe-terminal-prompt-bar-response-row {
+	padding: 4px 8px 0;
+	box-sizing: border-box;
+}
+
+.vybe-terminal-prompt-bar-response {
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--vscode-input-placeholderForeground);
+	text-align: left;
+	max-height: 100px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	word-break: break-word;
+}
+
+/* --- Hint bar — simple centered text --- */
+
+.vybe-terminal-prompt-bar-hint {
+	text-align: center;
+	color: var(--vscode-input-placeholderForeground);
+	font-size: 10px;
+	height: 20px;
+	line-height: 20px;
+	opacity: 1;
+	cursor: pointer;
+}
+
+/* --- Composer container (hidden by default, shown on expand) --- */
+
+.vybe-terminal-prompt-bar-composer {
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+}
