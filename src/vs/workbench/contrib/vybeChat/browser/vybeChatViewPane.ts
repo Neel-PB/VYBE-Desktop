@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import './media/vybeChatComposer.css';
+import './media/vybeChatConversation.css';
 
-import { $, append } from '../../../../base/browser/dom.js';
+import { $, append, getWindow } from '../../../../base/browser/dom.js';
+import { generateUuid } from '../../../../base/common/uuid.js';
 import { ViewPane, IViewPaneOptions } from '../../../browser/parts/views/viewPane.js';
 import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
 import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
@@ -19,8 +21,10 @@ import { IHoverService } from '../../../../platform/hover/browser/hover.js';
 import { ICommandService } from '../../../../platform/commands/common/commands.js';
 import { IViewsService } from '../../../services/views/common/viewsService.js';
 import { IVybeChatConversationIndexService } from '../common/vybeChatConversationIndex.js';
-import { VybeChatComposer } from './components/composer/vybeChatComposer.js';
+import { VybeChatComposer, type ComposerSendPayload } from './components/composer/vybeChatComposer.js';
 import { VybeChatPastChats } from './components/pastChats/vybeChatPastChats.js';
+import { VybeChatConversationView } from './components/chatArea/vybeChatConversationView.js';
+import { VybeChatHumanMessage } from './components/chatArea/vybeChatHumanMessage.js';
 import { IModelService } from '../../../../editor/common/services/model.js';
 import { ILanguageService } from '../../../../editor/common/languages/language.js';
 
@@ -28,6 +32,9 @@ export class VybeChatViewPane extends ViewPane {
 
 	private chatBody!: HTMLElement;
 	private composer!: VybeChatComposer;
+	private conversationView: VybeChatConversationView | null = null;
+	private messageCount = 0;
+	private currentHeight = 0;
 
 	constructor(
 		options: IViewPaneOptions,
@@ -55,8 +62,6 @@ export class VybeChatViewPane extends ViewPane {
 	protected override renderBody(container: HTMLElement): void {
 		super.renderBody(container);
 
-		// Suppress any native scrollbar on the pane-body container.
-		// All scrolling is handled by DomScrollableElement within the composer.
 		container.style.overflow = 'hidden';
 
 		this.chatBody = append(container, $('.vybe-chat-body'));
@@ -76,14 +81,87 @@ export class VybeChatViewPane extends ViewPane {
 			this.commandService,
 			this.viewsService,
 		));
+
+		this._register(this.composer.onSend(payload => this.handleSend(payload)));
+	}
+
+	private handleSend(payload: ComposerSendPayload): void {
+		const isFirstMessage = !this.conversationView;
+		if (isFirstMessage) {
+			this.transitionToConversation();
+		}
+		this.addHumanMessage(payload);
+
+		if (isFirstMessage) {
+			// Re-layout after the CSS state change (.has-messages) takes effect
+			const win = getWindow(this.chatBody);
+			win.requestAnimationFrame(() => this.relayoutConversation());
+		}
+	}
+
+	private transitionToConversation(): void {
+		this.conversationView = this._register(new VybeChatConversationView(
+			this.chatBody,
+			this.composer.domNode,
+		));
+
+		this.chatBody.classList.add('has-messages');
+		this.relayoutConversation();
+	}
+
+	private relayoutConversation(): void {
+		if (!this.conversationView || this.currentHeight <= 0) { return; }
+		const composerEl = this.composer.domNode;
+		const composerStyle = getWindow(composerEl).getComputedStyle(composerEl);
+		const composerOuterHeight = composerEl.offsetHeight
+			+ parseFloat(composerStyle.marginTop)
+			+ parseFloat(composerStyle.marginBottom);
+		const conversationsHeight = this.currentHeight - composerOuterHeight;
+		this.conversationView.domNode.style.height = `${conversationsHeight}px`;
+		this.conversationView.layout(conversationsHeight);
+	}
+
+	private addHumanMessage(payload: ComposerSendPayload): void {
+		const messageId = generateUuid();
+
+		const humanMessage = this._register(new VybeChatHumanMessage(
+			{
+				editorStateJSON: payload.editorStateJSON,
+				messageId,
+				messageIndex: this.messageCount++,
+			},
+			{
+				modelService: this.modelService,
+				languageService: this.languageService,
+				themeService: this._themeService,
+				onOpenSettingsModelsTab: () => this.commandService.executeCommand('vybe.openSettingsEditor.models'),
+				onOpenSettingsDocsTab: () => this.commandService.executeCommand('vybe.openSettingsEditor.indexing-docs'),
+			},
+		));
+
+		const aiResponse = $('div.vybe-chat-ai-response');
+		const placeholder = append(aiResponse, $('div.vybe-chat-ai-response-placeholder'));
+
+		const msgIndex = this.messageCount - 1;
+		if (msgIndex === 0) {
+			placeholder.textContent = 'This is a full-length placeholder response to simulate a complete AI reply. '.repeat(30).trim();
+		} else if (msgIndex === 1) {
+			placeholder.textContent = 'This is a half-length placeholder response. '.repeat(12).trim();
+		} else {
+			placeholder.textContent = 'This is an extra-long placeholder response that exceeds the full viewport height to test scrolling behavior with large content blocks. '.repeat(50).trim();
+		}
+
+		this.conversationView!.addMessagePair(humanMessage.domNode, aiResponse);
 	}
 
 	protected override layoutBody(height: number, width: number): void {
 		super.layoutBody(height, width);
+		this.currentHeight = height;
 		if (this.chatBody) {
 			this.chatBody.style.height = `${height}px`;
 			this.chatBody.style.width = `${width}px`;
 		}
+		this.relayoutConversation();
 	}
 
 	override focus(): void {

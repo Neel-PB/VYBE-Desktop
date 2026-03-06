@@ -12,6 +12,7 @@
 	--vybe-tab-label-line-height: 14px;
 	--vybe-tab-label-font-size: 12px;
 	--vybe-tab-label-max-width: 108px;
+	--vybe-tab-active-bg: var(--vscode-list-activeSelectionBackground);
 }
 
 /* Base composite-bar-action-tab styling - override existing styles (panel + auxiliary bar) */
@@ -258,14 +259,14 @@
 	color: rgb(49, 53, 58) !important;
 }
 
-/* Active/Checked state - VS Code input background (panel + auxiliary bar) */
+/* VYBE: active tab -- list selection color flattened to solid via color-mix */
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
 .monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
 .monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked,
 .monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked {
-	background-color: var(--vscode-input-background) !important;
+	background-color: var(--vybe-tab-active-bg) !important;
 }
 
 .monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked .composite-bar-action-tab-label .action-label,
@@ -352,24 +353,14 @@
 	pointer-events: auto;
 }
 
-/* Close button background on hover - inactive tabs (panel + auxiliarybar) */
-.monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button,
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:not(.checked):hover .codicon-close.remove-button {
-	background-color: var(--vscode-sideBar-background, rgba(51, 51, 51, 0.4)) !important;
-}
-
-/* Close button background on hover - active/checked tabs (panel + auxiliarybar) */
-.monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button,
-.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab.checked:hover .codicon-close.remove-button {
-	background-color: var(--vscode-input-background) !important;
+/* Close button background on hover - solid input-background (panel + auxiliarybar) */
+.monaco-workbench .part.panel > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.panel > .header-or-footer > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container > .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button,
+.monaco-workbench .part.auxiliarybar > .title > .composite-bar-container .composite-bar-scrollable .composite-bar > .monaco-action-bar .action-item.composite-bar-action-tab:hover .codicon-close.remove-button {
+	background-color: var(--vybe-tab-active-bg) !important;
 }
 
 /* Badge positioning for composite-bar-action-tab */

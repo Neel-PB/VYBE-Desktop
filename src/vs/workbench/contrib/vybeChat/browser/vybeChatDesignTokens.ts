@@ -81,6 +81,17 @@ export const CHAT_PAST_ITEM_GAP_PX = 2.4;
 export const CHAT_PAST_TIMESTAMP_MARGIN_LEFT_PX = 9.6;
 export const CHAT_PAST_MAX_ITEMS = 3;
 
+// --- Conversation View ------------------------------------------------------
+
+export const CHAT_CONVERSATION_PAIR_GAP_PX = 6;
+export const CHAT_CONVERSATION_PAIR_PADDING_BOTTOM_PX = 56;
+export const CHAT_HUMAN_MESSAGE_MAX_HEIGHT_PX = 72;
+export const CHAT_HUMAN_MESSAGE_PADDING_H_PX = 8;
+export const CHAT_HUMAN_MESSAGE_PADDING_V_PX = 6;
+export const CHAT_HUMAN_MESSAGE_BORDER_RADIUS_PX = 6;
+export const CHAT_HUMAN_MESSAGE_STICKY_Z_INDEX = 101;
+export const CHAT_HUMAN_MESSAGE_EDIT_Z_INDEX = 102;
+
 // --- Composite style strings (for inline use) ------------------------------
 
 export const CHAT_BODY_STYLE = `display: flex; flex-direction: column; height: 100%;`;

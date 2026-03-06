@@ -1031,6 +1031,7 @@
 		"--collapse-from-width",
 		"--slide-from-x",
 		"--slide-from-y",
+		"--vybe-tab-active-bg",
 		"--vybe-tab-height",
 		"--vybe-tab-label-font-size",
 		"--vybe-tab-label-height",

@@ -37,6 +37,13 @@ import { registerComposerCommands } from './lexical/vybeComposerCommands.js';
 
 export type AgentMode = 'agent' | 'plan' | 'ask';
 
+export interface ComposerSendPayload {
+	text: string;
+	images: ImageAttachment[];
+	mentions: ContextPillData[];
+	editorStateJSON: unknown;
+}
+
 const MAX_INPUT_HEIGHT = 234;
 
 const MODE_LABELS: Record<AgentMode, string> = {
@@ -59,8 +66,8 @@ const MODE_PLACEHOLDERS: Record<AgentMode, string> = {
 
 export class VybeChatComposer extends Disposable {
 
-	private readonly _onSend = this._register(new Emitter<{ text: string; images: ImageAttachment[]; mentions: ContextPillData[] }>());
-	readonly onSend: Event<{ text: string; images: ImageAttachment[]; mentions: ContextPillData[] }> = this._onSend.event;
+	private readonly _onSend = this._register(new Emitter<ComposerSendPayload>());
+	readonly onSend: Event<ComposerSendPayload> = this._onSend.event;
 
 	private readonly _onStop = this._register(new Emitter<void>());
 	readonly onStop: Event<void> = this._onStop.event;
@@ -367,7 +374,8 @@ export class VybeChatComposer extends Disposable {
 		if (!text && images.length === 0 && mentions.length === 0) {
 			return;
 		}
-		this._onSend.fire({ text, images, mentions });
+		const editorStateJSON = this.lexicalEditor.getEditorState().toJSON();
+		this._onSend.fire({ text, images, mentions, editorStateJSON });
 		this.clearInput();
 		this.setRunning(true);
 	}
@@ -608,6 +616,22 @@ export class VybeChatComposer extends Disposable {
 				this.submitMessage();
 			}
 		}));
+	}
+
+	getEditorStateJSON(): unknown {
+		return this.lexicalEditor.getEditorState().toJSON();
+	}
+
+	restoreEditorState(stateJSON: unknown): void {
+		// eslint-disable-next-line local/code-no-any-casts, @typescript-eslint/no-explicit-any
+		const state = this.lexicalEditor.parseEditorState(stateJSON as any);
+		this.lexicalEditor.setEditorState(state);
+		this.updatePlaceholderVisibility();
+		this.updateSendButtonEnabled();
+		this.updateScrollDimensions();
+		if (this.modelService && this.languageService) {
+			applyFileIconClasses(this.lexicalEditor, this.modelService, this.languageService);
+		}
 	}
 
 	override dispose(): void {

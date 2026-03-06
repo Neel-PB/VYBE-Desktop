@@ -1,0 +1,187 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* ===========================================================================
+ * VYBE Chat Conversation - Active Chat State
+ *
+ * Scrollable message area with sticky human messages + AI responses,
+ * composer at bottom. Activated by .has-messages on .vybe-chat-body.
+ * =========================================================================== */
+
+/* --- Conversation container (scrollable message area) ---------------------- */
+
+.vybe-chat-conversations {
+	display: none;
+	flex-direction: column;
+	flex: 1 1 0%;
+	min-height: 0;
+	width: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	position: relative;
+	scrollbar-width: thin;
+	scrollbar-color: var(--vscode-scrollbarSlider-background) transparent;
+}
+
+.vybe-chat-conversations::-webkit-scrollbar {
+	width: 8px;
+}
+
+.vybe-chat-conversations::-webkit-scrollbar-thumb {
+	background-color: var(--vscode-scrollbarSlider-background);
+	border-radius: 4px;
+}
+
+.vybe-chat-conversations::-webkit-scrollbar-thumb:hover {
+	background-color: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* --- State: active chat (.has-messages) ------------------------------------ */
+
+.vybe-chat-body.has-messages .vybe-chat-conversations {
+	display: flex;
+}
+
+.vybe-chat-body.has-messages .vybe-chat-past-section {
+	display: none !important;
+}
+
+.vybe-chat-body.has-messages .vybe-composer-wrapper {
+	justify-content: flex-start;
+	margin-bottom: 10px;
+}
+
+/* --- Messages inner container ---------------------------------------------- */
+
+.vybe-chat-messages-inner {
+	display: flex;
+	flex-direction: column;
+	padding-inline: 10px;
+	box-sizing: border-box;
+	max-width: 840px;
+	margin: 0 auto;
+	width: 100%;
+	position: relative;
+}
+
+/* --- Human-AI pair container ----------------------------------------------- */
+
+.vybe-chat-pair-container {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	box-sizing: border-box;
+	position: relative;
+}
+
+/* --- Human message widget -------------------------------------------------- */
+
+.vybe-chat-human-message {
+	display: block;
+	outline: none !important;
+	padding: 0;
+	margin-bottom: 6px;
+	background-color: var(--vscode-editor-background);
+	position: sticky;
+	top: 0;
+	z-index: 101;
+}
+
+.vybe-chat-human-message:focus,
+.vybe-chat-human-message:focus-visible {
+	outline: none !important;
+	outline-width: 0 !important;
+	border-color: inherit;
+}
+
+.vybe-chat-human-message.editing {
+	z-index: 102;
+}
+
+/* --- Human message box (readonly - mirrors .vybe-composer-input-box) -------- */
+
+.vybe-chat-human-message-box {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 100%;
+	background: var(--vscode-titleBar-activeBackground);
+	border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+	border-radius: 8px;
+	padding: 6px 8px;
+	cursor: pointer;
+	transition: border-color 100ms ease-in-out;
+	box-sizing: border-box;
+}
+
+.vybe-chat-human-message-box:hover {
+	border-color: var(--vscode-focusBorder, var(--vscode-panel-border, rgba(128, 128, 128, 0.35)));
+}
+
+.vybe-chat-human-message.editing .vybe-chat-human-message-box {
+	display: none;
+}
+
+.vybe-chat-human-message-text {
+	overflow: hidden;
+	max-height: 72px;
+}
+
+/* --- Readonly Lexical editor in human message ------------------------------ */
+
+.vybe-chat-human-readonly-editor {
+	display: block;
+	line-height: 1.4;
+	font-family: inherit;
+	font-size: 13px;
+	color: var(--vscode-input-foreground);
+	background-color: transparent;
+	outline: none;
+	border: none;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	white-space: pre-wrap;
+	padding: 0;
+	user-select: text;
+}
+
+.vybe-chat-human-readonly-editor p {
+	margin: 0;
+}
+
+/* Hide close icons on pills in readonly mode */
+.vybe-chat-human-readonly-editor .codicon-close {
+	display: none !important;
+}
+
+/* Hide caret in readonly mode */
+.vybe-chat-human-readonly-editor * {
+	caret-color: transparent;
+}
+
+/* --- Edit mode: composer replaces the readonly box inline ------------------ */
+
+.vybe-chat-human-edit .vybe-composer-wrapper {
+	margin: 0;
+	max-width: none;
+	padding: 0;
+}
+
+/* --- AI response area (placeholder for now) -------------------------------- */
+
+.vybe-chat-ai-response {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding-inline: 9px;
+	min-height: 40px;
+}
+
+.vybe-chat-ai-response-placeholder {
+	color: var(--vscode-descriptionForeground);
+	font-size: 13px;
+	opacity: 0.5;
+	padding: 8px 0;
+}

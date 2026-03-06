@@ -8,10 +8,11 @@
 	visibility: hidden !important;
 }
 
+/* VYBE: use editor background so aux panel matches the editor area */
 .monaco-workbench .part.auxiliarybar > .content .monaco-editor,
 .monaco-workbench .part.auxiliarybar > .content .monaco-editor .margin,
 .monaco-workbench .part.auxiliarybar > .content .monaco-editor .monaco-editor-background {
-	background-color: var(--vscode-sideBar-background);
+	background-color: var(--vscode-editor-background);
 }
 
 .monaco-workbench .part.auxiliarybar .title-actions .actions-container {
@@ -22,8 +23,9 @@
 	margin-right: 4px;
 }
 
+/* VYBE: use editor background so title bar matches the editor area */
 .monaco-workbench .part.auxiliarybar > .title {
-	background-color: var(--vscode-sideBarTitle-background);
+	background-color: var(--vscode-editor-background);
 }
 
 .monaco-workbench .part.auxiliarybar > .title > .title-label {
