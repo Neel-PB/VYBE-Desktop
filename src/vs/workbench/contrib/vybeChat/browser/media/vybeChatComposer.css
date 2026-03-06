@@ -1,0 +1,432 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* ===========================================================================
+ * VYBE Chat Composer - Empty / New Chat State
+ *
+ * Layout: composer input centered, past chats pushed to bottom.
+ * Design: matched to old VYBE messageComposer (agent pill, model button).
+ * All colors use VS Code theme tokens -- no hardcoded values.
+ * =========================================================================== */
+
+/* --- Root body -------------------------------------------------------------- */
+
+.vybe-chat-body {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background: var(--vscode-sideBar-background);
+	overflow: hidden;
+	position: relative;
+}
+
+/* --- Composer wrapper (centered column) ------------------------------------- */
+
+.vybe-composer-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
+	position: relative;
+	margin: 0 auto;
+	max-width: 840px;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0 10px;
+	flex-shrink: 0;
+}
+
+/* --- Input box (old VYBE: titleBar bg, 8px radius, theme-aware border) ---- */
+
+.vybe-composer-input-box {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	background: var(--vscode-titleBar-activeBackground);
+	border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+	border-radius: 8px;
+	padding: 6px 8px 4px 8px;
+	position: relative;
+	z-index: 1;
+	transition: border-color 100ms ease-in-out;
+	box-sizing: border-box;
+	gap: 0;
+}
+
+/* --- Focus suppression ----------------------------------------------------- */
+/*
+ * VS Code globally applies a blue outline to focused [tabindex] elements.
+ * We suppress it on composer elements since focus is indicated via content.
+ */
+
+.vybe-composer-input-box:focus-within {
+	border-color: var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+}
+
+.vybe-composer-editor:focus,
+.vybe-composer-editor:focus-visible {
+	outline: none !important;
+	outline-width: 0 !important;
+}
+
+.vybe-composer-input-box *:focus {
+	outline: none !important;
+}
+
+/* --- Image preview row (above editor, inside input box) --------------------- */
+
+.vybe-composer-image-row {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	margin-bottom: 4px;
+}
+
+/* --- Text area (contenteditable + DomScrollableElement) --------------------- */
+/*
+ * DomScrollableElement wraps .vybe-composer-scroll-content.
+ * Scrollbar is rendered by VS Code's scrollbar widgets (rectangular,
+ * sharp edges, themed via scrollbarSlider CSS variables).
+ * Same approach as vybeSettingsEditor sidebar/content scrollbars.
+ */
+
+.vybe-composer-editor-container {
+	position: relative;
+	cursor: text;
+	width: 100%;
+	min-height: 20px;
+}
+
+.vybe-composer-scroll-content {
+	width: 100%;
+	min-height: 20px;
+	box-sizing: border-box;
+}
+
+.vybe-composer-editor {
+	display: block;
+	width: 100%;
+	min-height: 20px;
+	height: auto;
+	resize: none;
+	font-size: 13px;
+	line-height: 1.4;
+	font-family: inherit;
+	color: var(--vscode-input-foreground);
+	background-color: transparent;
+	border: none;
+	outline: none;
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	white-space: pre-wrap;
+	user-select: text;
+}
+
+.vybe-composer-placeholder {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 0;
+	pointer-events: none;
+	user-select: none;
+	font-size: 13px;
+	line-height: 1.4;
+	color: var(--vscode-input-placeholderForeground);
+	opacity: 0.5;
+}
+
+.vybe-composer-editor-container.has-content .vybe-composer-placeholder {
+	display: none;
+}
+
+/* --- Bottom bar (grid: 4fr 1fr, 9px gap from text area) -------------------- */
+
+.vybe-composer-bottom-bar {
+	display: grid;
+	grid-template-columns: 4fr 1fr;
+	align-items: center;
+	height: 28px;
+	box-sizing: border-box;
+	width: 100%;
+	margin-top: 9px;
+}
+
+/* Left side: selectors */
+.vybe-composer-selectors {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	min-width: 0;
+	height: 20px;
+	margin-right: 6px;
+	flex-shrink: 1;
+	flex-grow: 0;
+	grid-column: 1;
+}
+
+/* ===========================================================================
+ * Agent Mode Pill (matched to old VYBE: pill bg, gear icon, chevron-up)
+ * =========================================================================== */
+
+.vybe-composer-mode-pill {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+	line-height: 24px;
+	min-width: 0;
+	max-width: 100%;
+	padding: 2px 4px 2px 8px;
+	border-radius: 24px;
+	flex-shrink: 0;
+	cursor: pointer;
+	border: none;
+	background-color: var(--vscode-editor-background);
+	transition: background-color 0.15s ease;
+	user-select: none;
+}
+
+.vybe-composer-mode-pill .vybe-composer-pill-icon {
+	font-size: 14px !important;
+	flex-shrink: 0;
+	width: 14px;
+	height: 14px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0.5;
+}
+
+.vybe-composer-mode-pill .vybe-composer-pill-label {
+	opacity: 0.8;
+	max-width: 120px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+	font-weight: 400;
+	line-height: 12px;
+	height: 13px;
+	display: flex;
+	align-items: baseline;
+	transition: opacity 0.15s ease;
+}
+
+.vybe-composer-mode-pill .vybe-composer-pill-chevron {
+	font-size: 14px !important;
+	flex-shrink: 0;
+	opacity: 0.8;
+	transition: opacity 0.15s ease;
+}
+
+.vybe-composer-mode-pill:hover .vybe-composer-pill-label,
+.vybe-composer-mode-pill:hover .vybe-composer-pill-chevron {
+	opacity: 1;
+}
+
+/* ===========================================================================
+ * Model Pill (matched to old VYBE: no bg, text + chevron only, 0.6 opacity)
+ * =========================================================================== */
+
+.vybe-composer-model-pill {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+	line-height: 12px;
+	min-width: 0;
+	max-width: 100%;
+	padding: 2.5px 6px;
+	border-radius: 23px;
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	flex-shrink: 1;
+	overflow: hidden;
+	transition: background-color 0.15s ease;
+	user-select: none;
+}
+
+.vybe-composer-model-pill .vybe-composer-pill-label {
+	opacity: 0.6;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: normal;
+	max-width: 100%;
+	flex: 1 1 auto;
+	min-width: 0;
+	padding-bottom: 1px;
+	transition: opacity 0.15s ease;
+}
+
+.vybe-composer-model-pill .vybe-composer-pill-chevron {
+	font-size: 14px !important;
+	flex-shrink: 0;
+	opacity: 0.6;
+	transition: opacity 0.15s ease;
+}
+
+.vybe-composer-model-pill:hover .vybe-composer-pill-label,
+.vybe-composer-model-pill:hover .vybe-composer-pill-chevron {
+	opacity: 1;
+}
+
+/* --- Action buttons (right side of bottom bar) ------------------------------ */
+
+.vybe-composer-actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	justify-content: flex-end;
+	height: 28px;
+	grid-column: 2;
+}
+
+.vybe-composer-action-btn {
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	color: var(--vscode-foreground);
+	flex-shrink: 0;
+	opacity: 0.5;
+}
+
+.vybe-composer-action-btn:hover {
+	opacity: 1;
+}
+
+.vybe-composer-action-btn .codicon {
+	font-size: 16px;
+}
+
+/*
+ * Send button: all styles applied inline via TS (matching old VYBE pattern)
+ * to avoid any CSS specificity conflicts with VS Code's codicon base rules.
+ * Container class .vybe-composer-send-container used only for targeting.
+ */
+
+/* --- Past Chats section (pinned to bottom) ---------------------------------- */
+
+.vybe-chat-past-section {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	flex: 1 1 0%;
+	width: 100%;
+	margin: 10px auto 6.4px;
+	max-width: 840px;
+	box-sizing: border-box;
+	padding: 0;
+}
+
+.vybe-chat-past-content {
+	padding: 12.8px;
+	margin-top: auto;
+}
+
+.vybe-chat-past-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 3.2px 6.4px;
+	font-size: 12px;
+	line-height: 1.2;
+	margin-bottom: 2.4px;
+	gap: 8px;
+	opacity: 0.8;
+}
+
+.vybe-chat-past-header-left {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.vybe-chat-past-label {
+	color: var(--vscode-descriptionForeground);
+	font-weight: 400;
+	flex-shrink: 0;
+	margin-right: 4px;
+	opacity: 0.55;
+}
+
+.vybe-chat-past-header-left .codicon {
+	color: var(--vscode-descriptionForeground);
+	font-size: 12px !important;
+	opacity: 0.55;
+}
+
+.vybe-chat-past-view-all {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	cursor: pointer;
+	color: var(--vscode-descriptionForeground);
+	text-decoration: none;
+	font-size: 12px;
+	opacity: 0.55;
+}
+
+.vybe-chat-past-view-all:hover {
+	color: var(--vscode-foreground);
+	opacity: 0.80;
+}
+
+.vybe-chat-past-header-left:hover .vybe-chat-past-label {
+	opacity: 0.80;
+}
+
+.vybe-chat-past-list {
+	display: flex;
+	flex-direction: column;
+	gap: 2.4px;
+}
+
+.vybe-chat-past-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 3.2px 6.4px;
+	border-radius: 4px;
+	cursor: pointer;
+	min-width: 0;
+	line-height: 1.2;
+	outline: none;
+}
+
+.vybe-chat-past-item:hover {
+	background-color: var(--vscode-list-hoverBackground);
+}
+
+.vybe-chat-past-item-title {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: var(--vscode-descriptionForeground);
+	opacity: 0.68;
+}
+
+.vybe-chat-past-item-time {
+	font-size: 12px;
+	color: var(--vscode-descriptionForeground);
+	margin-left: 9.6px;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	opacity: 0.55;
+}

@@ -1,0 +1,143 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* ===========================================================================
+ * Context Pills -- inline non-editable mention elements in the composer.
+ *
+ * With Lexical, pills sit inside <p> elements which provide proper
+ * line-height and baseline alignment. The old vertical-align/transform
+ * hacks are no longer needed.
+ *
+ * File icon themes only require .show-file-icons ancestor + .file-icon
+ * class -- .monaco-icon-label is not needed.
+ * =========================================================================== */
+
+/* --- Lexical paragraph baseline ------------------------------------------- */
+
+.vybe-composer-editor .vybe-composer-paragraph {
+	margin: 0;
+	line-height: 1.4;
+}
+
+/* --- Pill base ------------------------------------------------------------ */
+
+.vybe-composer-editor .mention {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 4px;
+	padding: 0 4px;
+	height: 16px;
+	font-size: 11px;
+	line-height: 16px;
+	white-space: nowrap;
+	user-select: none;
+	vertical-align: text-bottom;
+	position: relative;
+	top: 0.5px;
+}
+
+.vybe-composer-editor .mention .show-file-icons {
+	display: contents;
+}
+
+/* --- File pill wrapper ----------------------------------------------------- */
+
+.vybe-composer-editor .mention .mention-file-wrapper {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	position: relative;
+}
+
+/* --- Icon: clean ::before with no inherited baggage ------------------------ */
+
+.vybe-composer-editor .mention .mention-file-icon-container {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 12px;
+	height: 12px;
+	overflow: hidden;
+}
+
+.vybe-composer-editor .mention .mention-file-icon-container .vybe-pill-icon {
+	display: block;
+	width: 12px;
+	height: 12px;
+	flex-shrink: 0;
+	overflow: hidden;
+}
+
+.vybe-composer-editor .mention .mention-file-icon-container .vybe-pill-icon::before {
+	display: block;
+	width: 12px;
+	height: 12px;
+	font-size: 16px !important;
+	line-height: 12px !important;
+	margin-left: -2px;
+	background-size: contain;
+	background-position: center center;
+	background-repeat: no-repeat;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Codicon pill ---------------------------------------------------------- */
+
+.vybe-composer-editor .mention .mention-codicon-wrapper {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	position: relative;
+}
+
+.vybe-composer-editor .mention .mention-codicon-wrapper > .codicon:not(.codicon-close) {
+	font: normal normal normal 12px/1 codicon !important;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 12px;
+	height: 12px;
+	flex-shrink: 0;
+}
+
+/* --- Close button ---------------------------------------------------------- */
+
+.vybe-composer-editor .mention .codicon-close {
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	margin: auto 0;
+	font: normal normal normal 12px/1 codicon !important;
+	cursor: pointer;
+	width: 12px;
+	height: 12px;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+	pointer-events: none;
+	opacity: 0;
+}
+
+.vybe-composer-editor .mention:hover .codicon-close {
+	display: inline-flex;
+	pointer-events: auto;
+	opacity: 0.6;
+}
+
+.vybe-composer-editor .mention:hover .mention-file-icon-container {
+	opacity: 0;
+}
+
+.vybe-composer-editor .mention:hover .mention-codicon-wrapper > .codicon:not(.codicon-close) {
+	opacity: 0;
+}
+
+.vybe-composer-editor .mention .codicon-close:hover {
+	opacity: 1;
+}

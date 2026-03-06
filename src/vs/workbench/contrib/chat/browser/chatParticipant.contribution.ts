@@ -4,23 +4,33 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { coalesce, isNonEmptyArray } from '../../../../base/common/arrays.js';
-import { Codicon } from '../../../../base/common/codicons.js';
+// VYBE: Codicon only used in disabled chat view block
+// import { Codicon } from '../../../../base/common/codicons.js';
 import { toErrorMessage } from '../../../../base/common/errorMessage.js';
 import { Event } from '../../../../base/common/event.js';
 import { createCommandUri, MarkdownString } from '../../../../base/common/htmlContent.js';
-import { KeyCode, KeyMod } from '../../../../base/common/keyCodes.js';
+// VYBE: import disabled -- native chat view disabled (see block comment below)
+// import { KeyCode, KeyMod } from '../../../../base/common/keyCodes.js';
 import { Disposable, DisposableMap, DisposableStore } from '../../../../base/common/lifecycle.js';
 import * as strings from '../../../../base/common/strings.js';
-import { localize, localize2 } from '../../../../nls.js';
-import { ContextKeyExpr, IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
+import { localize } from '../../../../nls.js';
+// VYBE: localize2 only used in disabled chat view block
+// import { localize, localize2 } from '../../../../nls.js';
+import { IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
+// VYBE: ContextKeyExpr removed -- only used in disabled chat view descriptor
+// import { ContextKeyExpr, IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
 import { ExtensionIdentifier, IExtensionManifest } from '../../../../platform/extensions/common/extensions.js';
 import { SyncDescriptor } from '../../../../platform/instantiation/common/descriptors.js';
 import { IProductService } from '../../../../platform/product/common/productService.js';
 import { Registry } from '../../../../platform/registry/common/platform.js';
-import { registerIcon } from '../../../../platform/theme/common/iconRegistry.js';
-import { ViewPaneContainer } from '../../../browser/parts/views/viewPaneContainer.js';
+// VYBE: registerIcon only used in disabled chat view block
+// import { registerIcon } from '../../../../platform/theme/common/iconRegistry.js';
+// VYBE: ViewPaneContainer only used in disabled chat view block
+// import { ViewPaneContainer } from '../../../browser/parts/views/viewPaneContainer.js';
 import { IWorkbenchContribution } from '../../../common/contributions.js';
-import { IViewContainersRegistry, IViewDescriptor, IViewsRegistry, ViewContainer, ViewContainerLocation, Extensions as ViewExtensions } from '../../../common/views.js';
+import { IViewsRegistry, Extensions as ViewExtensions } from '../../../common/views.js';
+// VYBE: IViewContainersRegistry, IViewDescriptor, ViewContainer, ViewContainerLocation only used in disabled chat view block
+// import { IViewContainersRegistry, IViewDescriptor, IViewsRegistry, ViewContainer, ViewContainerLocation, Extensions as ViewExtensions } from '../../../common/views.js';
 import { Extensions, IExtensionFeaturesRegistry, IExtensionFeatureTableRenderer, IRenderedData, IRowData, ITableData } from '../../../services/extensionManagement/common/extensionFeatures.js';
 import { isProposedApiEnabled } from '../../../services/extensions/common/extensions.js';
 import * as extensionsRegistry from '../../../services/extensions/common/extensionsRegistry.js';
@@ -30,11 +40,17 @@ import { IChatAgentData, IChatAgentService } from '../common/participants/chatAg
 import { ChatContextKeys } from '../common/actions/chatContextKeys.js';
 import { IRawChatParticipantContribution } from '../common/participants/chatParticipantContribTypes.js';
 import { ChatAgentLocation, ChatModeKind } from '../common/constants.js';
-import { ChatViewId, ChatViewContainerId } from './chat.js';
-import { ChatViewPane } from './widgetHosts/viewPane/chatViewPane.js';
+import { ChatViewId } from './chat.js';
+// VYBE: ChatViewContainerId only used in disabled chat view block
+// import { ChatViewId, ChatViewContainerId } from './chat.js';
+// VYBE: import disabled -- native chat view disabled
+// import { ChatViewPane } from './widgetHosts/viewPane/chatViewPane.js';
 
 // --- Chat Container &  View Registration
 
+// VYBE: Native VS Code chat disabled -- Vybe Chat replaces it.
+// The entire container + view registration is preserved as a comment for upstream merge reference.
+/*
 const chatViewIcon = registerIcon('chat-view-icon', Codicon.chatSparkle, localize('chatViewIcon', 'View icon of the chat view.'));
 
 const chatViewContainer: ViewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
@@ -46,7 +62,6 @@ const chatViewContainer: ViewContainer = Registry.as<IViewContainersRegistry>(Vi
 	hideIfEmpty: true,
 	order: 1,
 }, ViewContainerLocation.AuxiliaryBar, { isDefault: true, doNotRegisterOpenCommand: true });
-
 const chatViewDescriptor: IViewDescriptor = {
 	id: ChatViewId,
 	containerIcon: chatViewContainer.icon,
@@ -78,6 +93,7 @@ const chatViewDescriptor: IViewDescriptor = {
 	)
 };
 Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([chatViewDescriptor], chatViewContainer);
+*/
 
 const chatParticipantExtensionPoint = extensionsRegistry.ExtensionsRegistry.registerExtensionPoint<IRawChatParticipantContribution[]>({
 	extensionPoint: 'chatParticipants',
