@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/**
+ * VYBE Chat — Root-level CSS variables and global styles.
+ */
+
+/* Shimmer bright band: black on light themes, white on dark themes */
+.monaco-workbench {
+	--vybe-shine-bright: rgb(0, 0, 0);
+}
+
+.monaco-workbench.vs-dark,
+.monaco-workbench.hc-black {
+	--vybe-shine-bright: rgb(255, 255, 255);
+}
+
+/* AI response area — shared padding and layout */
+.vybe-chat-ai-response {
+	padding: 4px 18px;
+}

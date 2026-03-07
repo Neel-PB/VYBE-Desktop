@@ -1,0 +1,55 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/**
+ * VYBE Chat Thinking Part — Styles
+ *
+ * Shimmer, chevron, collapsible, and scrollbar shared styles come from
+ * vybeChatShared.css; this file covers thinking-specific overrides.
+ */
+
+/* allow-any-unicode-next-line */
+/* ─── Root ───────────────────────────────────────────────────────────────── */
+
+.vybe-chat-thinking-part {
+	margin: 2px 0;
+}
+
+.collapsible-clean.collapsible-thought {
+	font-family: -apple-system, "system-ui", sans-serif;
+	font-size: 13px;
+	user-select: none;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Scrollable body (hidden scrollbar) ─────────────────────────────────── */
+
+.vybe-chat-thinking-part .think-content-scrollable {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.vybe-chat-thinking-part .think-content-scrollable::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Markdown inside thinking: tighter spacing ──────────────────────────── */
+
+.vybe-chat-thinking-part .vybe-markdown-container-root {
+	white-space: pre-wrap;
+	word-break: break-word;
+	line-height: 1.4;
+}
+
+.vybe-chat-thinking-part .vybe-markdown-container-root .markdown-section {
+	margin: 2px 0 !important;
+}
+
+.vybe-chat-thinking-part .vybe-markdown-container-root .markdown-section:first-child {
+	margin-top: 0 !important;
+}

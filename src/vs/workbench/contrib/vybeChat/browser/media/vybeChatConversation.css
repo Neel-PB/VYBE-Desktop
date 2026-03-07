@@ -177,6 +177,12 @@
 	gap: 6px;
 	padding-inline: 9px;
 	min-height: 40px;
+	outline: none !important;
+}
+
+.vybe-chat-ai-response *:focus,
+.vybe-chat-ai-response *:focus-visible {
+	outline: none !important;
 }
 
 .vybe-chat-ai-response-placeholder {

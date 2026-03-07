@@ -1,0 +1,149 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/**
+ * VYBE Chat — Shared CSS for all content parts.
+ *
+ * Covers: shimmer (make-shine), chevron reveal-on-hover, collapsible
+ * expand/collapse, list item hover, target hover, and collapsible wrapper.
+ */
+
+/* allow-any-unicode-next-line */
+/* ─── Shimmer / Make-Shine Animation ─────────────────────────────────────── */
+
+@keyframes shine {
+	0% {
+		background-position: 200% center;
+	}
+	100% {
+		background-position: -200% center;
+	}
+}
+
+.make-shine {
+	animation: shine 2s linear infinite;
+	animation-delay: -1s;
+	opacity: 1 !important;
+	background-clip: text;
+	-webkit-background-clip: text;
+	background-image: linear-gradient(
+		90deg,
+		color-mix(in srgb, var(--vscode-foreground) 50%, transparent) 0%,
+		color-mix(in srgb, var(--vscode-foreground) 50%, transparent) 40%,
+		var(--vybe-shine-bright, rgb(255, 255, 255)) 45%,
+		var(--vybe-shine-bright, rgb(255, 255, 255)) 55%,
+		color-mix(in srgb, var(--vscode-foreground) 50%, transparent) 60%,
+		color-mix(in srgb, var(--vscode-foreground) 50%, transparent) 100%
+	);
+	background-size: 200% 100%;
+	-webkit-text-fill-color: transparent;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Collapsible Wrapper ────────────────────────────────────────────────── */
+
+.collapsible-clean {
+	cursor: pointer;
+	user-select: none;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Chevron container: stable box for padding/margin, icon rotates inside ─ */
+
+.collapsible-clean .chevron-container {
+	opacity: 0;
+	width: 0;
+	overflow: hidden;
+	transition: opacity 0.2s ease-in-out, width 0.2s ease-in-out;
+}
+
+.collapsible-clean .chevron-right {
+	transition: transform 0.15s ease-in-out;
+}
+
+.collapsible-clean:not(.is-expanded):hover .chevron-container {
+	opacity: 1;
+	width: 16px;
+}
+
+.collapsible-clean:not(.is-expanded):hover .chevron-right {
+	opacity: 0.36;
+}
+
+.collapsible-clean.is-expanded .chevron-container {
+	opacity: 1;
+	width: 16px;
+}
+
+.collapsible-clean.is-expanded .chevron-right {
+	opacity: 0.36;
+	transform: rotate(90deg);
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Collapsible children (expanded area) ───────────────────────────────── */
+
+.collapsible-clean-children {
+	overflow-anchor: none;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Target hover (filename etc.) ───────────────────────────────────────── */
+
+.edit-header-target {
+	transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.edit-header-target:hover {
+	color: var(--vscode-textLink-foreground) !important;
+	opacity: 0.8 !important;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── List item hover ────────────────────────────────────────────────────── */
+
+.context-list-item:not(.context-list-item--disabled):hover {
+	background-color: var(--vscode-titleBar-activeBackground);
+}
+
+/* allow-any-unicode-next-line */
+/* ─── File header: icon ↔ chevron swap on hover ──────────────────────────── */
+
+/* Chevron is hidden by default; file icon visible */
+.vybe-file-header .vybe-file-header-chevron {
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+
+.vybe-file-header .vybe-file-header-icon {
+	opacity: 1;
+	transition: opacity 0.15s ease-in-out;
+}
+
+/* On header hover: hide file icon, show chevron */
+.vybe-file-header:hover .vybe-file-header-icon {
+	opacity: 0;
+}
+
+.vybe-file-header:hover .vybe-file-header-chevron {
+	opacity: 0.6;
+	pointer-events: auto;
+}
+
+/* When collapsed (header has .is-collapsed): always show chevron, hide icon */
+.vybe-file-header.is-collapsed .vybe-file-header-icon {
+	opacity: 0;
+}
+
+.vybe-file-header.is-collapsed .vybe-file-header-chevron {
+	opacity: 0.6;
+	pointer-events: auto;
+}
+
+/* Filename click highlight on hover */
+.vybe-file-header-filename:hover {
+	color: var(--vscode-textLink-foreground) !important;
+}

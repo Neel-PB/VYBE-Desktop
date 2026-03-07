@@ -7,4 +7,5 @@ import './vybeChatParticipant.contribution.js';
 import './vybeChatSessions.contribution.js';
 import './vybeChatConversationIndex.contribution.js';
 import './vybeChatInitialization.contribution.js';
+import './vybeChatMarkdownRenderer.contribution.js';
 import '../actions/vybeChatActions.js';

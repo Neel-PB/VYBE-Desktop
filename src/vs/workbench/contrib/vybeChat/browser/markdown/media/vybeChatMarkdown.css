@@ -1,0 +1,390 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* VYBE Chat Markdown Styles — Cursor parity */
+
+/* ===== Root ===== */
+
+.vybe-markdown-container-root {
+	user-select: text;
+	font-size: 13px;
+	line-height: 20.8px;
+	min-height: 22.2px;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	max-width: 100%;
+}
+
+.vybe-markdown-container-root *:focus {
+	outline: none;
+}
+
+/* ===== Sections ===== */
+
+.vybe-markdown-container-root .markdown-section {
+	margin: 6px 0;
+}
+
+.vybe-markdown-container-root .markdown-section:has(.markdown-code-outer-container) {
+	min-width: 0;
+}
+
+/* ===== Headings ===== */
+
+.vybe-markdown-container-root h1 {
+	font-size: 1.6em;
+	font-weight: 600;
+	line-height: 1.25;
+	margin: 0.3em 0 0.15em 0;
+	color: var(--vscode-foreground);
+}
+
+.vybe-markdown-container-root h2 {
+	font-size: 16.9px;
+	font-weight: 600;
+	line-height: 21.125px;
+	margin: 10px 0;
+	color: var(--vscode-foreground);
+}
+
+.vybe-markdown-container-root .markdown-section:first-child h2,
+.vybe-markdown-container-root > h2:first-child {
+	margin-top: 0 !important;
+}
+
+.vybe-markdown-container-root h3 {
+	font-size: 14.95px;
+	font-weight: 600;
+	line-height: 18.6875px;
+	margin: 8px 0;
+	color: var(--vscode-foreground);
+}
+
+.vybe-markdown-container-root .markdown-section:first-child h3,
+.vybe-markdown-container-root > h3:first-child {
+	margin-top: 0 !important;
+}
+
+.vybe-markdown-container-root h4 {
+	font-size: 1em;
+	font-weight: 600;
+	line-height: 1.3;
+	margin: 0.3em 0 0.15em 0;
+	color: var(--vscode-foreground);
+}
+
+.vybe-markdown-container-root h5 {
+	font-size: 0.83em;
+	font-weight: 600;
+	line-height: 1.3;
+	margin: 0.3em 0 0.15em 0;
+	color: var(--vscode-foreground);
+}
+
+.vybe-markdown-container-root h6 {
+	font-size: 0.67em;
+	font-weight: 600;
+	line-height: 1.3;
+	margin: 0.3em 0 0.15em 0;
+	color: var(--vscode-foreground);
+}
+
+/* No animation on sections or headings — prevents stuck feel during streaming */
+.vybe-markdown-container-root .markdown-section,
+.vybe-markdown-container-root h1,
+.vybe-markdown-container-root h2,
+.vybe-markdown-container-root h3,
+.vybe-markdown-container-root h4,
+.vybe-markdown-container-root h5,
+.vybe-markdown-container-root h6,
+.vybe-markdown-container-root hr {
+	animation: none !important;
+	transition: none !important;
+}
+
+/* ===== Paragraphs ===== */
+
+.vybe-markdown-container-root p {
+	margin: 0.15em 0;
+	line-height: 19.5px;
+}
+
+.vybe-markdown-container-root p:first-child {
+	margin-top: 0 !important;
+}
+
+.vybe-markdown-container-root .rendered-markdown {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.vybe-markdown-container-root .rendered-markdown > *:first-child {
+	margin-top: 0 !important;
+}
+
+/* ===== Bold / Italic ===== */
+
+.vybe-markdown-container-root .markdown-bold-text,
+.vybe-markdown-container-root strong,
+.vybe-markdown-container-root b {
+	font-weight: 600;
+}
+
+.vybe-markdown-container-root .markdown-italics-text,
+.vybe-markdown-container-root em,
+.vybe-markdown-container-root i {
+	font-style: italic;
+}
+
+/* ===== Inline Code ===== */
+
+.vybe-markdown-container-root .markdown-inline-code,
+.vybe-markdown-container-root code:not(pre code) {
+	word-break: break-word;
+	overflow-wrap: break-word;
+	font-family: var(--monaco-monospace-font, Menlo, Monaco, "Courier New", monospace);
+	cursor: default;
+	color: var(--vscode-textPreformat-foreground);
+	background-color: color-mix(in srgb, var(--vscode-textCodeBlock-background) 80%, var(--vscode-input-placeholderForeground));
+	padding: 1.5px 3px;
+	border-radius: 4px;
+	font-size: 0.9em;
+	line-height: 1.4;
+	display: inline;
+	vertical-align: baseline;
+	max-width: 100%;
+}
+
+/* Color token (hex inline code) */
+.vybe-markdown-container-root .markdown-color-token {
+	display: inline;
+	vertical-align: middle;
+	line-height: 1.4;
+}
+
+.vybe-markdown-container-root .markdown-color-token-swatch {
+	background: transparent;
+	border: 1px solid var(--vscode-editorWidget-border);
+	border-radius: 3px;
+	box-sizing: border-box;
+	display: inline-block;
+	height: 12px;
+	width: 12px;
+	margin-right: 0.25em;
+	overflow: hidden;
+	vertical-align: middle;
+	position: relative;
+	top: -1.5px;
+}
+
+/* ===== Lists ===== */
+
+.vybe-markdown-container-root ul,
+.vybe-markdown-container-root ol {
+	margin: 4px 0 0 16px;
+	padding: 0px;
+	line-height: 19.5px;
+}
+
+.vybe-markdown-container-root ul.nested,
+.vybe-markdown-container-root ol.nested {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.vybe-markdown-container-root li {
+	margin-top: 2px;
+	margin-bottom: 2px;
+	margin-left: 0px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	line-height: 19.5px;
+}
+
+.vybe-markdown-container-root ul li {
+	list-style-type: disc;
+}
+
+.vybe-markdown-container-root ol li {
+	list-style-type: decimal;
+}
+
+/* ===== Links ===== */
+
+.vybe-markdown-container-root .markdown-link,
+.vybe-markdown-container-root a {
+	display: inline;
+	color: var(--vscode-textLink-foreground);
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.vybe-markdown-container-root .markdown-link:hover,
+.vybe-markdown-container-root a:hover {
+	text-decoration: underline;
+}
+
+.vybe-markdown-container-root .markdown-link[data-link^="file:"],
+.vybe-markdown-container-root a[href^="file:"] {
+	background-color: var(--vscode-textCodeBlock-background);
+	color: #3ecf8e;
+	padding: 1px 4px;
+	border-radius: 4px;
+	word-break: break-word;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.vybe-markdown-container-root .markdown-link[data-link^="file:"]:hover,
+.vybe-markdown-container-root a[href^="file:"]:hover {
+	background-color: color-mix(in srgb, #3ecf8e 20%, var(--vscode-textCodeBlock-background));
+}
+
+/* ===== Tables ===== */
+
+.vybe-markdown-container-root .markdown-table-container {
+	position: relative;
+	overflow: hidden;
+	margin: 1em 0;
+	width: 100%;
+	border: 1px solid var(--cursor-stroke-tertiary, var(--vscode-panel-border));
+	border-radius: 6px;
+	box-sizing: border-box;
+}
+
+.vybe-markdown-container-root .markdown-table-container .markdown-table-wrapper {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.vybe-markdown-container-root .markdown-table,
+.vybe-markdown-container-root table {
+	border-collapse: collapse;
+	width: max-content;
+	min-width: 100%;
+	white-space: nowrap;
+}
+
+.vybe-markdown-container-root .markdown-table th,
+.vybe-markdown-container-root table th,
+.vybe-markdown-container-root .markdown-table td,
+.vybe-markdown-container-root table td {
+	background-color: transparent;
+	border-bottom: 1px solid var(--cursor-stroke-tertiary, var(--vscode-panel-border));
+	border-right: 1px solid var(--cursor-stroke-tertiary, var(--vscode-panel-border));
+	padding: 5px 9px;
+	text-align: left;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+.vybe-markdown-container-root .markdown-table th,
+.vybe-markdown-container-root table th {
+	font-weight: 700;
+}
+
+.vybe-markdown-container-root .markdown-table th span,
+.vybe-markdown-container-root .markdown-table td span {
+	white-space: nowrap;
+}
+
+/* ===== Table Copy Button ===== */
+
+.vybe-markdown-container-root .markdown-table-copy-overlay {
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	z-index: 10;
+	display: none;
+	align-items: center;
+	pointer-events: auto;
+	background: var(--vscode-editor-background);
+	border-radius: 0 5px 0 4px;
+	padding: 4px;
+}
+
+.vybe-markdown-container-root .markdown-table-container:hover .markdown-table-copy-overlay {
+	display: flex;
+}
+
+.vybe-markdown-container-root .markdown-table-copy-btn {
+	height: 20px;
+	width: 20px;
+	background: transparent;
+	border: none;
+	color: var(--vscode-foreground);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	opacity: 0.5;
+	transition: opacity 0.1s ease, background-color 0.1s ease;
+	border-radius: 4px;
+	padding: 0;
+}
+
+.vybe-markdown-container-root .markdown-table-copy-btn:hover {
+	opacity: 1;
+	background-color: rgba(128, 128, 128, 0.15);
+}
+
+.vybe-markdown-container-root .markdown-table-copy-btn:active {
+	opacity: 0.8;
+	transform: scale(0.95);
+}
+
+.vybe-markdown-container-root .markdown-table-copy-btn .codicon {
+	font-size: 12px;
+	line-height: 12px;
+}
+
+/* ===== Horizontal Rule ===== */
+
+.vybe-markdown-container-root hr {
+	margin: 0.5em 0px;
+	border: none;
+	height: 1px;
+	background-color: var(--vscode-textSeparator-foreground);
+}
+
+/* ===== Blockquotes ===== */
+
+.vybe-markdown-container-root blockquote {
+	margin: 0px 0px 0px 16px;
+	padding-left: 12px;
+	border-left: 3px solid var(--vscode-editorWidget-border);
+	color: var(--vscode-foreground);
+	opacity: 0.8;
+}
+
+/* ===== Code Blocks (fallback pre/code) ===== */
+
+.vybe-markdown-container-root .markdown-code-outer-container {
+	border-radius: 6px;
+	overflow: hidden;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+}
+
+.vybe-markdown-container-root .markdown-block-code {
+	border-radius: 6px;
+}
+
+.vybe-markdown-container-root pre {
+	margin: 4px 0;
+	padding: 12px;
+	background-color: var(--vscode-panel-background);
+	border: 1px solid var(--vscode-panel-border);
+	border-radius: 8px;
+	overflow-x: auto;
+	box-sizing: border-box;
+}
+
+.vybe-markdown-container-root pre code {
+	font-family: Menlo, Monaco, "Courier New", monospace;
+	font-size: 0.9em;
+	line-height: 1.4;
+}

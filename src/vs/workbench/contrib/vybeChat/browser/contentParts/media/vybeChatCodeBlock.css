@@ -1,0 +1,210 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/**
+ * VYBE Chat Code Block — Styles
+ *
+ * Covers both plain code blocks and reference/citation code blocks.
+ * File header styles are minimal here since the header structure is
+ * built from design tokens via createFileHeader.
+ */
+
+/* allow-any-unicode-next-line */
+/* ─── Outer ──────────────────────────────────────────────────────────────── */
+
+.vybe-codeblock-outer {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	max-width: 100%;
+	overflow: hidden;
+	margin: 0.5em 0;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Container ──────────────────────────────────────────────────────────── */
+
+.vybe-codeblock-container {
+	width: 100%;
+	max-width: 100%;
+	border-radius: 8px;
+	overflow: hidden;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	contain: paint;
+	box-sizing: border-box;
+	background-color: var(--vscode-panel-background);
+	border: 1px solid var(--vscode-panel-border);
+	transition: border-color 0.1s ease-in-out;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── File header (reference code blocks) ────────────────────────────────── */
+
+.vybe-codeblock-container > .vybe-file-header {
+	background-color: #212427;
+	border-bottom: 1px solid #383838;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	transition: background-color 0.1s ease-in-out;
+}
+
+/* Light theme */
+.vs .vybe-codeblock-container > .vybe-file-header {
+	background-color: #eceff2;
+	border-bottom: 1px solid #d9d9d9;
+}
+
+/* File icon ::before alignment */
+.vybe-file-header .monaco-icon-label.file-icon::before {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 18px;
+	line-height: 19.5px;
+	padding-right: 0;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Content area ───────────────────────────────────────────────────────── */
+
+.vybe-codeblock-content {
+	display: block;
+	position: relative;
+	overflow: hidden;
+	background-color: var(--vscode-panel-background);
+	box-sizing: border-box;
+	padding: 0 6px;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Editor container ───────────────────────────────────────────────────── */
+
+.vybe-codeblock-editor {
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+/* Suppress ALL native scrollbars inside the code block.
+	Monaco's scrollbar is a custom DOM element (.scrollbar > .slider),
+	not a native browser scrollbar, so this only kills the unwanted one. */
+.vybe-codeblock-container *::-webkit-scrollbar {
+	display: none !important;
+	width: 0 !important;
+	height: 0 !important;
+}
+
+.vybe-codeblock-container * {
+	scrollbar-width: none !important;
+}
+
+/* Show Monaco's custom horizontal scrollbar only on hover */
+.vybe-codeblock-editor .monaco-scrollable-element .scrollbar {
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.vybe-codeblock-editor:hover .monaco-scrollable-element .scrollbar {
+	opacity: 1;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Monaco overrides ───────────────────────────────────────────────────── */
+
+.vybe-codeblock-container .monaco-editor {
+	background-color: var(--vscode-panel-background) !important;
+	overflow-y: hidden !important;
+}
+
+.vybe-codeblock-container .monaco-editor .margin {
+	background-color: var(--vscode-panel-background) !important;
+	width: 0 !important;
+	min-width: 0 !important;
+	overflow: hidden !important;
+}
+
+.vybe-codeblock-container .monaco-editor .margin-view-overlays {
+	display: none !important;
+}
+
+.vybe-codeblock-container .monaco-editor .monaco-scrollable-element {
+	left: 0 !important;
+	overflow-y: hidden !important;
+}
+
+.vybe-codeblock-container .monaco-editor-background,
+.vybe-codeblock-container .lines-content {
+	background-color: var(--vscode-panel-background) !important;
+}
+
+.vybe-codeblock-container .monaco-editor .view-line,
+.vybe-codeblock-container .monaco-editor .view-lines {
+	background-color: transparent !important;
+}
+
+.vybe-codeblock-container .monaco-editor .overflow-guard {
+	overflow-y: hidden !important;
+}
+
+.vybe-codeblock-container .monaco-editor .view-lines {
+	padding-left: 0;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Copy overlay ───────────────────────────────────────────────────────── */
+
+.vybe-codeblock-copy-overlay {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	z-index: 10;
+	display: none;
+	align-items: center;
+	background: linear-gradient(to left, var(--vscode-panel-background) 80%, transparent 100%);
+	pointer-events: auto;
+}
+
+.vybe-codeblock-container:hover .vybe-codeblock-copy-overlay {
+	display: flex;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Copy button ────────────────────────────────────────────────────────── */
+
+.vybe-codeblock-copy-btn {
+	height: 20px;
+	width: 20px;
+	background: transparent;
+	border: none;
+	color: var(--vscode-foreground);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	opacity: 0.5;
+	transition: opacity 0.1s ease, background-color 0.1s ease;
+	border-radius: 4px;
+	padding: 0;
+}
+
+.vybe-codeblock-copy-btn:hover {
+	opacity: 1;
+	background-color: rgba(128, 128, 128, 0.15);
+}
+
+.vybe-codeblock-copy-btn:active {
+	opacity: 0.8;
+	transform: scale(0.95);
+}
+
+.vybe-codeblock-copy-btn .codicon {
+	font-size: 12px;
+	line-height: 12px;
+}

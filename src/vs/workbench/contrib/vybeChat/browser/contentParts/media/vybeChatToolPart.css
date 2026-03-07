@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/**
+ * VYBE Chat Tool Part — Styles
+ *
+ * Shimmer, chevron, collapsible, and list-item-hover shared styles come from
+ * vybeChatShared.css; this file covers tool-specific overrides.
+ */
+
+/* allow-any-unicode-next-line */
+/* ─── Root ───────────────────────────────────────────────────────────────── */
+
+.vybe-chat-tool-part {
+	margin: 2px 0;
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Scrollbar inside expanded area ─────────────────────────────────────── */
+
+.vybe-chat-tool-part .monaco-scrollable-element .scrollbar.vertical .slider {
+	background-color: rgba(121, 121, 121, 0.4);
+}
+
+.vybe-chat-tool-part:hover .monaco-scrollable-element .scrollbar.vertical .slider {
+	background-color: rgba(121, 121, 121, 0.7);
+}
+
+/* allow-any-unicode-next-line */
+/* ─── Web content scroll container ───────────────────────────────────────── */
+
+.vybe-chat-tool-part .vybe-web-content-scroll {
+	max-height: 126px;
+}
